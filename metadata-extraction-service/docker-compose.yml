@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+
+  file-db-metadev:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${FILE_MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${FILE_MYSQL_USER}
+      MYSQL_PASSWORD: ${FILE_MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${FILE_MYSQL_DATABASE}
+    networks:
+      - be-network
+    volumes:
+      - file_data_metadev:/var/lib/mysql
+
+  file-service-metadev:
+    build: ../file-service
+    depends_on:
+      - file-db-metadev
+    labels:
+      - "api_routes=/file"
+      - "secure=yes"
+    networks:
+      - be-network
+    ports:
+      - 8081:8081
+    environment:
+      HTTP_HOST: 8081
+      KAFKA_HOST: ${KAFKA_HOST}
+      DB_HOST: file-db-metadev
+      DB_PORT: 3306
+      DB_NAME: ${FILE_MYSQL_DATABASE}
+      DB_USER: ${FILE_MYSQL_USER}
+      DB_PASSWORD: ${FILE_MYSQL_PASSWORD}
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_BUCKET: ${AWS_BUCKET}
+      AWS_REGION: eu-west-1
+
+volumes:
+  file_data_metadev:
+
+networks:
+  be-network:

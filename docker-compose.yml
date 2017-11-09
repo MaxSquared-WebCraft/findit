@@ -1,0 +1,140 @@
+version: '3'
+
+services:
+  #  zookeeper:
+  #    image: wurstmeister/zookeeper
+  #    ports:
+  #      - "2181:2181"
+  #    networks:
+  #      - be-network
+  #
+  #  kafka:
+  #    image: wurstmeister/kafka:latest
+  #    ports:
+  #      - "9092:9092"
+  #    depends_on:
+  #      - zookeeper
+  #    networks:
+  #      - be-network
+  #    environment:
+  #      KAFKA_ADVERTISED_HOST_NAME: ${KAFKA_ADVERTISED_HOST_NAME}
+  #      KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT}
+  #      KAFKA_CREATE_TOPICS: "USER_CREATED:1:1,USER_CHANGED:1:1,USER_DELETED:1:1,FILE_UPLOADED:1:1,FILE_DELETED:1:1,METADATA_EXTRACTED:1:1"
+  #    volumes:
+  #      - /var/run/docker.sock:/var/run/docker.sock
+
+  elasticsearch:
+    image: bitnami/elasticsearch:6-master
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elastic_data:/bitnami
+    networks:
+      - be-network
+
+  user-db:
+    image: mysql:8.0
+    volumes:
+      - user_data:/var/lib/mysql
+    networks:
+      - be-network
+    environment:
+      MYSQL_ROOT_PASSWORD: ${USER_MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${USER_MYSQL_USER}
+      MYSQL_PASSWORD: ${USER_MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${USER_MYSQL_DATABASE}
+
+  file-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${FILE_MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${FILE_MYSQL_USER}
+      MYSQL_PASSWORD: ${FILE_MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${FILE_MYSQL_DATABASE}
+    networks:
+      - be-network
+    volumes:
+      - file_data:/var/lib/mysql
+
+  file-service:
+    build: ./file-service
+    depends_on:
+      - file-db
+    #      - kafka
+    labels:
+      - "api_routes=/file"
+      - "secure=yes"
+    networks:
+      - be-network
+    environment:
+      HTTP_HOST: 8081
+      KAFKA_HOST: ${KAFKA_HOST}
+      DB_HOST: file-db
+      DB_PORT: 3306
+      DB_NAME: ${FILE_MYSQL_DATABASE}
+      DB_USER: ${FILE_MYSQL_USER}
+      DB_PASSWORD: ${FILE_MYSQL_PASSWORD}
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_BUCKET: ${AWS_BUCKET}
+      AWS_REGION: eu-west-1
+
+  user-service:
+    build: ./user-service
+    depends_on:
+      - user-db
+    #      - kafka
+    labels:
+      - "api_routes=/login;/signup;/users;/roles;/user;/role"
+      - "secure=no"
+    networks:
+      - be-network
+    environment:
+      HTTP_HOST: 8081
+      KAFKA_HOST: ${KAFKA_HOST}
+      JWT_SECRET: ${JWT_SECRET}
+      DB_HOST: user-db
+      DB_PORT: 3306
+      DB_NAME: ${USER_MYSQL_DATABASE}
+      DB_USER: ${USER_MYSQL_USER}
+      DB_PASSWORD: ${USER_MYSQL_PASSWORD}
+
+  fulltext-service:
+    build: ./fulltext-service
+    depends_on:
+      #      - kafka
+      - elasticsearch
+    labels:
+      - "api_routes=/search"
+      - "secure=yes"
+    networks:
+      - be-network
+    environment:
+      HTTP_HOST: 8081
+      KAFKA_HOST: ${KAFKA_HOST}
+      ELASTIC_URL: elasticsearch:9200
+      ELASTIC_LOG_LEVEL: debug
+
+  metadata-extraction-service:
+    build: ./metadata-extraction-service
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      HTTP_HOST: 8080
+      JWT_SECRET: ${API_JWT_SECRET}
+    networks:
+      - be-network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  file_data:
+  user_data:
+  elastic_data:
+
+networks:
+  be-network:
