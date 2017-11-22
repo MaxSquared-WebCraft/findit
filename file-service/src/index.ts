@@ -1,9 +1,8 @@
 import 'reflect-metadata'
 import { createKoaServer } from 'routing-controllers';
-import { SampleController } from './controllers/sampleController';
 
 const app = createKoaServer({
-  controllers: [SampleController]
+  controllers: [__dirname + "/controllers/*.js"]
 });
 
 app.listen(3000);
