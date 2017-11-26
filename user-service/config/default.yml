@@ -1,0 +1,28 @@
+ports:
+    http: 8080
+    debug: 5858
+
+auth:
+    jwt_secret: 'supersecret'
+
+    github:
+          clientID: 'get_your_own'
+          clientSecret: 'get_your_own'
+          callbackURL: "http://127.0.0.1:3000/auth/github/callback"
+
+    facebook:
+          clientID: 'get_your_own'
+          clientSecret: 'get_your_own'
+          callbackURL: "http://127.0.0.1:3000/auth/linkedin/callback"
+
+    google:
+          consumerKey: 'get_your_own'
+          consumerSecret: 'get_your_own'
+          callbackURL: "http://127.0.0.1:3000/auth/twitter/callback"
+
+
+mongo:
+    url: 'database://mongo:27017'
+
+# none/debug/info
+loglevel: info
