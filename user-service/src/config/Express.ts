@@ -13,6 +13,10 @@ import {UserController} from '../controllers/UserController';
 import {RoleController} from '../controllers/RoleController';
 import {AuthController} from '../controllers/AuthController';
 import {getPayload} from '../util/RoleHelper';
+import {createConnection, useContainer as useContainerORM} from 'typeorm';
+import {RoleModel} from '../models/RoleModel';
+import {UserModel} from '../models/UserModel';
+import {setUpDatabase} from './SetupDB';
 
 export class ExpressConfig {
 
@@ -32,10 +36,28 @@ export class ExpressConfig {
         this.setupControllers();
     }
 
-    setupControllers() {
+    async setupControllers() {
         const controllersPath = path.resolve('dist', 'controllers');
 
         useContainer(Container);
+        useContainerORM(Container);
+
+        let connection = await createConnection({
+            type: "mysql",
+            host: "192.168.99.100",
+            port: 3306,
+            database: "findit",
+            username: "user",
+            password: "password",
+            synchronize: true,
+            logging: false,
+            entities: [
+                RoleModel,
+                UserModel
+            ]
+        });
+
+        setUpDatabase(connection);
 
         useExpressServer(this.app, {
             authorizationChecker: async (action: Action, roles: string[]) => {

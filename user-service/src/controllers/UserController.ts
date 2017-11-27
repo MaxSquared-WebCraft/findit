@@ -1,6 +1,7 @@
 import {Authorized, Body, Controller, CurrentUser, Delete, ForbiddenError, Get, Param, Put} from 'routing-controllers';
-import {UserModel, UserRepository} from '../repositorys/UserRepository';
+import {UserRepository} from '../repositorys/UserRepository';
 import {OrmRepository} from 'typeorm-typedi-extensions';
+import {UserModel} from '../models/UserModel';
 
 @Controller('/users')
 @Authorized()

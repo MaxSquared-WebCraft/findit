@@ -7,5 +7,3 @@ import {RoleModel} from '../models/RoleModel';
 export class RoleRepository extends Repository<RoleModel> {
 
 }
-
-export {RoleModel};

@@ -20,6 +20,7 @@ let opts = {
 };
 
 async function localHandler(email: string, password: string, done: Function) {
+    console.log("localHandler");
     if(!userRepositority) {
         userRepositority = Container.get(UserRepository);
     }
@@ -27,6 +28,7 @@ async function localHandler(email: string, password: string, done: Function) {
 
     bcrypt.compare(password, user.password, (err, isPasswordMatch) => {
         if(err) throw new BadRequestError("Can't compare passwords");
+        console.log("isPwPatch", isPasswordMatch);
         return isPasswordMatch ? done(null, user) : done(null, false);
     });
 }
@@ -62,8 +64,8 @@ async function jwtHandler(payload, done) {
 
 export function setupAuth(app) {
     app.use(passport.initialize());
-    passport.use(new LocalStrategy({usernameField: "email", session: false}, localHandler));
-    passport.use(new LocalAPIKeyStrategy(apiKeyHandler));
-    passport.use(new GoogleStrategy(config.get("auth.google"), googleHandler));
+    passport.use('local', new LocalStrategy({usernameField: "email", session: false}, localHandler));
+    passport.use('localapikey', new LocalAPIKeyStrategy(apiKeyHandler));
+    passport.use('google', new GoogleStrategy(config.get("auth.google"), googleHandler));
     passport.use(new JwtStrategy(opts, jwtHandler));
 }

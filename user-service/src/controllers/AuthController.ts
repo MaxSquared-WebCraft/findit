@@ -1,9 +1,11 @@
 import {Body, Controller, NotFoundError, Post, Req, UseBefore} from 'routing-controllers';
-import {UserModel, UserRepository} from '../repositorys/UserRepository';
+import {UserRepository} from '../repositorys/UserRepository';
 import {AlreadyExistsError} from '../errors/AlreadyExistsError';
 import {OrmRepository} from 'typeorm-typedi-extensions';
 import {createToken} from '../util/RoleHelper';
 import * as passport from 'passport';
+import {SignupUser} from '../dtos/SignupUser';
+import {UserModel} from '../models/UserModel';
 
 @Controller()
 export class AuthController {
@@ -11,8 +13,8 @@ export class AuthController {
     constructor(@OrmRepository() private readonly userRepository: UserRepository) {
     }
 
-    @Post('/local/signup')
-    async signUp(@Body({ required: true }) registerUser: {email: string, password: string}): Promise<any> {
+    @Post('/signup')
+    async signUp(@Body({ required: true }) registerUser: SignupUser): Promise<any> {
         if (await this.userRepository.findOne({email: registerUser.email})) {
             throw new AlreadyExistsError("Email is already in use.")
         }

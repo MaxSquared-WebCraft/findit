@@ -15,25 +15,25 @@ export class UserModel {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column()
+    @Column({nullable: true})
     providerId: string;
 
-    @Column()
+    @Column({nullable: true})
     provider: string;
 
-    @Column()
+    @Column({nullable: true})
     firstName: string;
 
-    @Column()
+    @Column({nullable: true})
     lastName: string;
 
     @Column({unique: true})
     email: string;
 
-    @Column()
+    @Column({nullable: true})
     password: string;
 
-    @Column()
+    @Column({nullable: true})
     profilePictureUrl: string;
 
     @CreateDateColumn()
@@ -42,27 +42,27 @@ export class UserModel {
     @UpdateDateColumn()
     editedDate: Date;
 
-    @ManyToOne(type => RoleModel, role => role.id)
+    @ManyToOne(type => RoleModel, role => role.users)
     role: RoleModel;
 
     @Column()
     deleted: boolean = false;
 
-    @Column()
+    @Column({nullable: true})
     apiKey: string;
 
     constructor(data?:any) {
-        this.id = data.id;
-        this.firstName = data.firstName;
-        this.lastName = data.lastName;
-        this.email = data.email;
-        this.password = data.password;
-        this.profilePictureUrl = data.profilePictureUrl;
-        this.createdDate = data.createdDate;
-        this.editedDate = data.editedDate;
-        this.role = data.role;
+        this.id = data.id ? data.id : "";
+        this.firstName = data.firstName ? data.firstName : null;
+        this.lastName = data.lastName ? data.lastName : null;
+        this.email = data.email ? data.email : null;
+        this.password = data.password ? data.password : null;
+        this.profilePictureUrl = data.profilePictureUrl ? data.profilePictureUrl : null;
+        this.createdDate = data.createdDate ? data.createdDate : null;
+        this.editedDate = data.editedDate ? data.editedDate : null;
+        this.role = data.role ? data.role : null;
         this.deleted = data.deleted ? data.deleted : false;
-        this.apiKey = data.apiKey;
+        this.apiKey = data.apiKey ? data.apiKey : null;
     }
 
     static parseOAuth(data:Profile): UserModel {
