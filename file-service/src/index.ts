@@ -1,8 +1,12 @@
 import 'reflect-metadata'
-import { createKoaServer } from 'routing-controllers';
+import { Application } from "./config/Application";
+import { Container } from "typedi";
+import { useContainer } from "routing-controllers";
+import { useContainer as useContainerORM } from 'typeorm'
 
-const app = createKoaServer({
-  controllers: [__dirname + "/controllers/*.js"]
-});
+useContainer(Container);
+useContainerORM(Container);
 
-app.listen(3000);
+const application = Container.get(Application);
+
+application.start();

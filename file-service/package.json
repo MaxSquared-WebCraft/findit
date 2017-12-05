@@ -12,8 +12,12 @@
     "koa-bodyparser": "^4.2.0",
     "koa-multer": "^1.0.2",
     "koa-router": "^7.2.1",
+    "mongodb": "^2.2.33",
     "reflect-metadata": "^0.1.10",
-    "routing-controllers": "^0.7.6"
+    "routing-controllers": "^0.7.6",
+    "typedi": "^0.6.0",
+    "typeorm": "^0.1.7",
+    "typeorm-typedi-extensions": "^0.1.1"
   },
   "devDependencies": {
     "@types/koa": "^2.0.40",
@@ -24,8 +28,8 @@
     "typescript": "^2.6.1"
   },
   "scripts": {
-    "start": "npm run build && node ./build/index.js",
-    "dev": "concurrently -k \"npm run build:watch\" \"nodemon ./build/index.js\"",
+    "start": "npm run build && node",
+    "dev": "concurrently -k -p \"[{name}]\" -n \"type,node\" -c \"blue,red.bold\" \"npm run build:watch\" \"nodemon \"",
     "build": "node_modules/.bin/tsc",
     "build:watch": "npm run build -- -w"
   }
