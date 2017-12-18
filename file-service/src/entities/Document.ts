@@ -1,14 +1,15 @@
-import { Entity, ObjectIdColumn, ObjectID, Column } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { User } from "./User";
 
 @Entity()
 export class Document {
 
-  @ObjectIdColumn()
-  id: ObjectID;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   uuid: string;
 
-  @Column()
-  userId: string;
+  @OneToMany(() => User, user => user.id)
+  users: User[];
 }

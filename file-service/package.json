@@ -11,21 +11,21 @@
     "koa": "^2.4.1",
     "koa-bodyparser": "^4.2.0",
     "koa-multer": "^1.0.2",
-    "koa-router": "^7.2.1",
-    "mongodb": "^2.2.33",
+    "koa-router": "^7.3.0",
+    "pg": "^7.4.0",
     "reflect-metadata": "^0.1.10",
     "routing-controllers": "^0.7.6",
     "typedi": "^0.6.0",
-    "typeorm": "^0.1.7",
+    "typeorm": "^0.1.9",
     "typeorm-typedi-extensions": "^0.1.1"
   },
   "devDependencies": {
-    "@types/koa": "^2.0.40",
+    "@types/koa": "^2.0.43",
     "@types/koa-bodyparser": "^3.0.26",
-    "@types/koa-router": "^7.0.24",
-    "concurrently": "^3.5.0",
-    "nodemon": "^1.12.1",
-    "typescript": "^2.6.1"
+    "@types/koa-router": "^7.0.27",
+    "concurrently": "^3.5.1",
+    "nodemon": "^1.13.3",
+    "typescript": "^2.6.2"
   },
   "scripts": {
     "start": "npm run build && node",
