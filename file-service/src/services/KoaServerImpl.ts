@@ -1,6 +1,6 @@
 import { Service, Token } from "typedi";
-import { IServer } from "./Application";
 import { createKoaServer } from "routing-controllers";
+import { IServer } from "../config/Application";
 
 export const KoaServerImpl = new Token<IServer>();
 
@@ -16,6 +16,7 @@ export class KoaImpl implements IServer {
   }
 
   start(port: number, message?: string) {
-    this.instance.listen(port, () => message || 'server started at port ' + port)
+    this.instance.listen(port);
+    console.log(message || 'Server listening at port ' + port)
   };
 }

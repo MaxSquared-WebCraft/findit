@@ -1,0 +1,8 @@
+{
+  "s3": {
+    "accessKeyId": "AKIAJXB2DYB2EF5SBNCA",
+    "secretAccessKey": "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",
+    "bucket": "findit.zaunermax.at",
+    "region": "eu-west-1"
+  }
+}

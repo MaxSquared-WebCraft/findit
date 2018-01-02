@@ -1,15 +1,33 @@
 import { Get, JsonController, Post, UploadedFile } from "routing-controllers";
+import { Inject } from "typedi";
+import { AwsUploadServiceImpl } from "../services/awsUploadServiceImpl";
 
-@JsonController()
+export interface MulterFile {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  size: number;
+  buffer: Buffer;
+}
+
+export interface IFileUploadService {
+  upload: (file: MulterFile) => Promise<any>
+}
+
+@JsonController('/file')
 export class FileController {
 
-  @Post()
-  addFile(@UploadedFile("document") file: any) {
+  @Inject(AwsUploadServiceImpl)
+  uploadService: IFileUploadService;
 
+  @Post('/')
+  async addFile(@UploadedFile("document") file: MulterFile) {
+    return this.uploadService.upload(file);
   }
 
-  @Get()
+  @Get('/')
   getFile() {
-
+    return { blah: 1234 }
   }
 }

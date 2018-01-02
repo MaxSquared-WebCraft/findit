@@ -1,6 +1,6 @@
 import { Inject, Service } from "typedi";
-import { KoaServerImpl } from "./KoaServerImpl";
 import { createConnection } from "typeorm";
+import { KoaServerImpl } from "../services/KoaServerImpl";
 
 export interface IServer {
   start: (port: number, message?: string) => void
