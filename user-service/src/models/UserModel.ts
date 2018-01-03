@@ -52,17 +52,19 @@ export class UserModel {
     apiKey: string;
 
     constructor(data?:any) {
-        this.id = data.id ? data.id : "";
-        this.firstName = data.firstName ? data.firstName : null;
-        this.lastName = data.lastName ? data.lastName : null;
-        this.email = data.email ? data.email : null;
-        this.password = data.password ? data.password : null;
-        this.profilePictureUrl = data.profilePictureUrl ? data.profilePictureUrl : null;
-        this.createdDate = data.createdDate ? data.createdDate : null;
-        this.editedDate = data.editedDate ? data.editedDate : null;
-        this.role = data.role ? data.role : null;
-        this.deleted = data.deleted ? data.deleted : false;
-        this.apiKey = data.apiKey ? data.apiKey : null;
+        if (data) {
+            this.id = data.id ? data.id : "";
+            this.firstName = data.firstName ? data.firstName : null;
+            this.lastName = data.lastName ? data.lastName : null;
+            this.email = data.email ? data.email : null;
+            this.password = data.password ? data.password : null;
+            this.profilePictureUrl = data.profilePictureUrl ? data.profilePictureUrl : null;
+            this.createdDate = data.createdDate ? data.createdDate : null;
+            this.editedDate = data.editedDate ? data.editedDate : null;
+            this.role = data.role ? data.role : null;
+            this.deleted = data.deleted ? data.deleted : false;
+            this.apiKey = data.apiKey ? data.apiKey : null;
+        }
     }
 
     static parseOAuth(data:Profile): UserModel {

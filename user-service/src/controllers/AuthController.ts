@@ -3,14 +3,15 @@ import {UserRepository} from '../repositorys/UserRepository';
 import {AlreadyExistsError} from '../errors/AlreadyExistsError';
 import {OrmRepository} from 'typeorm-typedi-extensions';
 import {createToken} from '../util/RoleHelper';
-import * as passport from 'passport';
 import {SignupUser} from '../dtos/SignupUser';
-import {UserModel} from '../models/UserModel';
+import {KafkaHandler} from '../kafka/Kafka';
+import * as passport from 'passport';
 
 @Controller()
 export class AuthController {
 
-    constructor(@OrmRepository() private readonly userRepository: UserRepository) {
+    constructor(@OrmRepository() private readonly userRepository: UserRepository,
+                private readonly kafka: KafkaHandler) {
     }
 
     @Post('/signup')
@@ -18,9 +19,8 @@ export class AuthController {
         if (await this.userRepository.findOne({email: registerUser.email})) {
             throw new AlreadyExistsError("Email is already in use.")
         }
-
-        let user = await this.userRepository.registerUser(new UserModel(registerUser));
-        return Promise.resolve({token: createToken(user)});
+        this.kafka.sendEvent('USER_CREATED', registerUser);
+        return Promise.resolve({success: true});
     }
 
     @Post('/login')
