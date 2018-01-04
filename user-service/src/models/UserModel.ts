@@ -6,14 +6,16 @@ import {
     UpdateDateColumn
 } from 'typeorm';
 import {RoleModel} from './RoleModel';
-import {Profile} from 'passport';
 import {Entity} from 'typeorm/decorator/entity/Entity';
 
 @Entity()
 export class UserModel {
 
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column({nullable: false})
+    uuid: string;
 
     @Column({nullable: true})
     providerId: string;
@@ -53,7 +55,8 @@ export class UserModel {
 
     constructor(data?:any) {
         if (data) {
-            this.id = data.id ? data.id : "";
+            this.id = data.id ? data.id : null;
+            this.uuid = data.uuid ? data.uuid : "";
             this.firstName = data.firstName ? data.firstName : null;
             this.lastName = data.lastName ? data.lastName : null;
             this.email = data.email ? data.email : null;
@@ -65,22 +68,5 @@ export class UserModel {
             this.deleted = data.deleted ? data.deleted : false;
             this.apiKey = data.apiKey ? data.apiKey : null;
         }
-    }
-
-    static parseOAuth(data:Profile): UserModel {
-        let user = new UserModel();
-        user.provider = data.provider;
-        user.providerId = data.id;
-        user.firstName = data.name.givenName;
-        user.lastName = data.name.familyName;
-
-        if(data.emails.length > 0) {
-            user.email = data.emails[0].value;
-        }
-        if(data.photos.length > 0) {
-            user.profilePictureUrl = data.photos[0].value;
-        }
-
-        return user;
     }
 }

@@ -2,6 +2,7 @@ import {Connection} from 'typeorm';
 import {RoleModel} from '../models/RoleModel';
 import {UserModel} from '../models/UserModel';
 import * as bcrypt  from 'bcrypt';
+import * as uuid from 'uuid/v4';
 
 export async function setUpDatabase(connection: Connection) {
     const roleRepo = connection.getRepository(RoleModel);
@@ -26,6 +27,7 @@ export async function setUpDatabase(connection: Connection) {
     let admin = await userRepo.findOne({email: "admin@findit.at"});
     if(!admin) {
         admin = new UserModel();
+        admin.uuid = uuid();
         admin.email = "admin@findit.at";
         admin.password = bcrypt.hashSync("FindIt#Admin!", 10);
         admin.role = adminRole;

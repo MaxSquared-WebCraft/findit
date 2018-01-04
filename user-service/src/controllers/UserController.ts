@@ -17,34 +17,34 @@ export class UserController {
     }
 
     @Get('/:id')
-    async getById(@Param('id') id: string,
+    async getById(@Param('uuid') uuid: string,
                   @CurrentUser() currentUser: Token): Promise<UserModel> {
-        if(currentUser.role !== 'ADMIN' || currentUser.id !== id) {
+        if(currentUser.role !== 'ADMIN' || currentUser.uuid !== uuid) {
             throw new ForbiddenError();
         }
 
-        return this.userRepository.findOne({id, deleted: false});
+        return this.userRepository.findOne({uuid, deleted: false});
     }
 
     @Put('/')
     async update(@Body({ required: true }) user: UserModel,
                  @CurrentUser() currentUser: Token): Promise<UserModel> {
-        if(currentUser.role !== 'ADMIN' || currentUser.id !== user.id) {
+        if(currentUser.role !== 'ADMIN' || currentUser.uuid !== user.uuid) {
             throw new ForbiddenError();
         }
         this.kafka.sendEvent('USER_CHANGED', user);
         return Promise.resolve(user);
     }
 
-    @Delete('/:id')
-    async delete(@Param('id') id: string,
+    @Delete('/:uuid')
+    async delete(@Param('uuid') uuid: string,
                  @CurrentUser() currentUser: Token): Promise<boolean> {
-        if(currentUser.role !== 'ADMIN' || currentUser.id !== id) {
+        if(currentUser.role !== 'ADMIN' || currentUser.uuid !== uuid) {
             throw new ForbiddenError();
         }
-        let user = await this.userRepository.findOne({id});
+        let user = await this.userRepository.findOne({uuid});
         if(user) {
-            this.kafka.sendEvent('USER_DELETED', id);
+            this.kafka.sendEvent('USER_DELETED', uuid);
         }
         return Promise.resolve(!!user);
     }

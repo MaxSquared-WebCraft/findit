@@ -57,7 +57,7 @@ export class ExpressConfig {
                 const token = action.request.headers["Authorization"];
                 const payload = getPayload(token);
 
-                if (payload && payload.id && !roles.length)
+                if (payload && payload.uuid && !roles.length)
                     return true;
                 return !!(payload && roles.find(role => payload.role == role).length > 0);
             },

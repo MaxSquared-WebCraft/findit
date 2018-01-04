@@ -13,7 +13,7 @@ export class RoleController {
         return await this.roleRepository.find();
     }
 
-    @Get('/:id')
+    @Get('/:uuid')
     async getById(@Param('id') id: string): Promise<RoleModel> {
         return this.roleRepository.findOne({id});
     }

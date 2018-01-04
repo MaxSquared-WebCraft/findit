@@ -7,10 +7,12 @@ import {createToken} from '../util/RoleHelper';
 import {SignupUser} from '../dtos/SignupUser';
 import {KafkaHandler} from '../kafka/Kafka';
 import * as bcrypt  from 'bcrypt';
+import * as uuid from 'uuid/v4';
 
 @Controller()
 export class AuthController {
-    constructor(@OrmRepository() private readonly userRepository: UserRepository,
+    constructor(@OrmRepository()
+                private readonly userRepository: UserRepository,
                 private readonly kafka: KafkaHandler) {
     }
 
@@ -20,7 +22,9 @@ export class AuthController {
             throw new AlreadyExistsError("Email is already in use.")
         }
         registerUser.password = bcrypt.hashSync(registerUser.password, 10);
-        this.kafka.sendEvent('USER_CREATED', registerUser);
+        let userObj:any = registerUser;
+        userObj.uuid = uuid();
+        this.kafka.sendEvent('USER_CREATED', userObj);
         return Promise.resolve({success: true});
     }
 

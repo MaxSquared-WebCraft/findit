@@ -35,7 +35,7 @@ export function getPayload(token: string): Token {
 
 export function createToken(user: UserModel): string {
     let payload: Token = {
-        id: user.id,
+        uuid: user.uuid,
         role: user.role.name
     };
     return jwt.sign(payload, config.get('auth.jwt_secret'));

@@ -5,7 +5,7 @@ declare module 'express-ping';
 declare module 'swagger-jsdoc';
 
 type Token = {
-    id: string,
+    uuid: string,
     role: string
 }
 
