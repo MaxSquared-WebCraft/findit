@@ -1,7 +1,7 @@
 {
-  "name": "node-microservice-demo",
+  "name": "find-it-user-service",
   "version": "1.0.0",
-  "description": "Nodejs + TypeScript + Swagger + Docker + Express seed project",
+  "description": "User and authorization service for findit",
   "main": "index.js",
   "scripts": {
     "check": "npm-check --skip-unused",
@@ -21,26 +21,6 @@
     "lint": "tslint ./src/{,**/}*.ts",
     "pretest": "npm-run-all -s clean build"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/swimlane/node-microservice-demo.git"
-  },
-  "keywords": [
-    "typescript",
-    "swagger",
-    "docker",
-    "express"
-  ],
-  "engines": {
-    "node": "~6.3"
-  },
-  "engineStrict": true,
-  "author": "Swimlane",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/swimlane/node-microservice-demo/issues"
-  },
-  "homepage": "https://github.com/swimlane/node-microservice-demod#readme",
   "dependencies": {
     "@types/node": "^4.2.23",
     "bcrypt": "^1.0.3",
