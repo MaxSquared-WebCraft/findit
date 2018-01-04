@@ -12,7 +12,6 @@ export class UserRepository extends Repository<UserModel> {
         if(!user.role) {
             user.role = await this.manager.findOne(RoleModel,{name: "FREE"});
         }
-        user.password = bcrypt.hashSync(user.password, 10);
         return this.save(user);
     }
 }
