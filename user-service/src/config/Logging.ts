@@ -20,7 +20,7 @@ export function setupLogging(app) {
     }
 
     setupExpress(app);
-};
+}
 
 function setupExpress(app) {
     // error logging
@@ -46,4 +46,4 @@ function setupExpress(app) {
             ]
         }));
     }
-};
+}

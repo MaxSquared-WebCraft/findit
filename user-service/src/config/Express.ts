@@ -1,32 +1,27 @@
 import * as express from 'express';
-import * as path from 'path';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as health from 'express-ping';
 
 import {Action, useContainer, useExpressServer} from 'routing-controllers';
-import {Container} from 'typedi';
-
-import {setupLogging} from './Logging';
-import {setupAuth} from './Authentication';
+import {createConnection, useContainer as useContainerORM} from 'typeorm';
 import {UserController} from '../controllers/UserController';
 import {RoleController} from '../controllers/RoleController';
 import {AuthController} from '../controllers/AuthController';
 import {getPayload} from '../util/RoleHelper';
-import {createConnection, useContainer as useContainerORM} from 'typeorm';
 import {RoleModel} from '../models/RoleModel';
 import {UserModel} from '../models/UserModel';
 import {setUpDatabase} from './SetupDB';
+import {setupLogging} from './Logging';
+import {Container} from 'typedi';
+import * as config from 'config';
 
 export class ExpressConfig {
-
     app: express.Express;
 
     constructor() {
         this.app = express();
-
         setupLogging(this.app);
-        setupAuth(this.app);
 
         this.app.use(cors());
         this.app.use(bodyParser.json());
@@ -37,18 +32,16 @@ export class ExpressConfig {
     }
 
     async setupControllers() {
-        const controllersPath = path.resolve('dist', 'controllers');
-
         useContainer(Container);
         useContainerORM(Container);
 
         let connection = await createConnection({
             type: "mysql",
-            host: "192.168.99.100",
+            host: config.get('mysql.url').toString(),
             port: 3306,
-            database: "findit",
-            username: "user",
-            password: "password",
+            database: 'findit',
+            username: config.get('mysql.user').toString(),
+            password: config.get('mysql.password').toString(),
             synchronize: true,
             logging: false,
             entities: [
@@ -57,7 +50,7 @@ export class ExpressConfig {
             ]
         });
 
-        setUpDatabase(connection);
+        await setUpDatabase(connection);
 
         useExpressServer(this.app, {
             authorizationChecker: async (action: Action, roles: string[]) => {
@@ -66,10 +59,7 @@ export class ExpressConfig {
 
                 if (payload && payload.id && !roles.length)
                     return true;
-                if (payload && roles.find(role => payload.role == role).length > 0)
-                    return true;
-
-                return false;
+                return !!(payload && roles.find(role => payload.role == role).length > 0);
             },
             currentUserChecker: async (action: Action) => {
                 const token = action.request.headers["Authorization"];

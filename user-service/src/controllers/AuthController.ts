@@ -1,15 +1,15 @@
-import {Body, Controller, NotFoundError, Post, Req, UseBefore} from 'routing-controllers';
-import {UserRepository} from '../repositorys/UserRepository';
+import {BadRequestError, Body, Controller, Post} from 'routing-controllers';
 import {AlreadyExistsError} from '../errors/AlreadyExistsError';
+import {UserRepository} from '../repositorys/UserRepository';
 import {OrmRepository} from 'typeorm-typedi-extensions';
+import {UserModel} from '../models/UserModel';
 import {createToken} from '../util/RoleHelper';
 import {SignupUser} from '../dtos/SignupUser';
 import {KafkaHandler} from '../kafka/Kafka';
-import * as passport from 'passport';
+import * as bcrypt  from 'bcrypt';
 
 @Controller()
 export class AuthController {
-
     constructor(@OrmRepository() private readonly userRepository: UserRepository,
                 private readonly kafka: KafkaHandler) {
     }
@@ -19,34 +19,20 @@ export class AuthController {
         if (await this.userRepository.findOne({email: registerUser.email})) {
             throw new AlreadyExistsError("Email is already in use.")
         }
+        registerUser.password = bcrypt.hashSync(registerUser.password, 10);
         this.kafka.sendEvent('USER_CREATED', registerUser);
         return Promise.resolve({success: true});
     }
 
     @Post('/login')
-    @UseBefore(passport.authenticate('local'))
-    async login(@Req() request: any): Promise<any> {
-        if(!request.user) {
-            throw new NotFoundError("Unknown user/password combination.")
+    async login(@Body({ required: true }) loginUser: SignupUser): Promise<any> {
+        let user:UserModel = await this.userRepository.findOne({email: loginUser.email});
+        if (!user && bcrypt.compare(loginUser.password, user.password, (err, isPasswordMatch) => {
+                if (err) throw new BadRequestError("Can't compare passwords");
+                return isPasswordMatch;
+            })) {
+            throw new Error("Ungültige User/Passwort kombination.")
         }
-        return Promise.resolve({token: createToken(request.user)});
-    }
-
-    @Post('/authenticate')
-    @UseBefore(passport.authenticate('localapikey'))
-    async authenticate(@Req() request: any): Promise<any> {
-        if(!request.user) {
-            throw new NotFoundError("Unknown user/password combination.")
-        }
-        return Promise.resolve({token: createToken(request.user)});
-    }
-
-    @Post('/oauth')
-    @UseBefore(passport.authenticate('google'))
-    async oauth(@Req() request: any): Promise<any> {
-        if(!request.user) {
-            throw new NotFoundError("Unknown user/password combination.")
-        }
-        return Promise.resolve({token: createToken(request.user)});
+        return Promise.resolve({token: createToken(user)});
     }
 }

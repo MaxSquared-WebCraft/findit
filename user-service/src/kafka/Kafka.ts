@@ -1,10 +1,10 @@
-import {UserModel} from '../models/UserModel';
-
-import * as kafka  from 'kafka-node';
 import {Service} from 'typedi';
 import {OrmRepository} from 'typeorm-typedi-extensions';
 import {UserRepository} from '../repositorys/UserRepository';
+import {UserModel} from '../models/UserModel';
 import {logger} from '../common/logging';
+import * as kafka  from 'kafka-node';
+import * as config from 'config';
 
 @Service()
 export class KafkaHandler {
@@ -16,12 +16,12 @@ export class KafkaHandler {
     }
 
     async setupKafka() {
-        this.producer = new kafka.Producer(new kafka.Client('zaunerserver.ddns.net:49312'));
+        this.producer = new kafka.Producer(new kafka.Client(config.get('kafka.url').toString()));
         this.producer.on('ready', () => {
             this.setupWhenProducerReady();
         });
 
-        this.consumer = new kafka.Consumer(new kafka.Client('zaunerserver.ddns.net:49312'),
+        this.consumer = new kafka.Consumer(new kafka.Client(config.get('kafka.url').toString()),
             [
                 { topic: 'USER_CREATED' },
                 { topic: 'USER_CHANGED' },
@@ -39,7 +39,7 @@ export class KafkaHandler {
 
         this.consumer.on('message', (message) => {
             console.log(message.topic, message.value);
-            this.handleIncoming(event);
+            this.handleIncoming(message);
         });
     }
 

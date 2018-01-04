@@ -2,11 +2,13 @@ import {Authorized, Body, Controller, CurrentUser, Delete, ForbiddenError, Get, 
 import {UserRepository} from '../repositorys/UserRepository';
 import {OrmRepository} from 'typeorm-typedi-extensions';
 import {UserModel} from '../models/UserModel';
+import {KafkaHandler} from '../kafka/Kafka';
 
 @Controller('/users')
 @Authorized()
 export class UserController {
-    constructor(@OrmRepository() private readonly userRepository: UserRepository) {}
+    constructor(@OrmRepository() private readonly userRepository: UserRepository,
+                private readonly kafka: KafkaHandler) {}
 
     @Get('/')
     @Authorized('ADMIN')
@@ -30,17 +32,20 @@ export class UserController {
         if(currentUser.role !== 'ADMIN' || currentUser.id !== user.id) {
             throw new ForbiddenError();
         }
-        return this.userRepository.save(user);
+        this.kafka.sendEvent('USER_CHANGED', user);
+        return Promise.resolve(user);
     }
 
     @Delete('/:id')
     async delete(@Param('id') id: string,
-                 @CurrentUser() currentUser: Token): Promise<UserModel> {
+                 @CurrentUser() currentUser: Token): Promise<boolean> {
         if(currentUser.role !== 'ADMIN' || currentUser.id !== id) {
             throw new ForbiddenError();
         }
         let user = await this.userRepository.findOne({id});
-        user.deleted = true;
-        return this.userRepository.save(user);
+        if(user) {
+            this.kafka.sendEvent('USER_DELETED', id);
+        }
+        return Promise.resolve(!!user);
     }
 }

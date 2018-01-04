@@ -42,7 +42,7 @@ export class UserModel {
     @UpdateDateColumn()
     editedDate: Date;
 
-    @ManyToOne(type => RoleModel, role => role.users)
+    @ManyToOne(type => RoleModel, role => role.users, { eager: true })
     role: RoleModel;
 
     @Column()
