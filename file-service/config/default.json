@@ -4,5 +4,9 @@
     "secretAccessKey": "fqF9oJRZx8848rCW/JKZyfIZN43rNMdx7RZPUFEt",
     "bucket": "findit.zaunermax.at",
     "region": "eu-west-1"
+  },
+  "port": 8080,
+  "kafka": {
+    "connectionString": "zaunerserver.ddns.net:49312"
   }
 }
