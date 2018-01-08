@@ -1,7 +1,7 @@
 {
-  "name": "node-microservice-demo",
+  "name": "fulltext-service",
   "version": "1.0.0",
-  "description": "Nodejs + TypeScript + Swagger + Docker + Express seed project",
+  "description": "Fulltext search service for find it",
   "main": "index.js",
   "scripts": {
     "preinstall": "npm i -g nodemon node-inspector rimraf npm-run-all npm-check",
@@ -14,31 +14,17 @@
     "clean:cov": "rimraf coverage",
     "debug": "node-debug",
     "build": "npm-run-all -s build:ts",
-    "build:ts": "tsc",
-    "watch:ts": "tsc --watch",
+    "build:ts": "./node_modules/typescript/bin/tsc",
+    "watch:ts": "./node_modules/typescript/bin/tsc --watch",
     "watch:node": "nodemon --debug --delay 2.5",
     "lint": "tslint ./src/{,**/}*.ts"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/swimlane/node-microservice-demo.git"
-  },
-  "keywords": [
-    "typescript",
-    "swagger",
-    "docker",
-    "express"
-  ],
   "engines": {
     "node": "~6.3"
   },
   "engineStrict": true,
-  "author": "Swimlane",
+  "author": "neXr",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/swimlane/node-microservice-demo/issues"
-  },
-  "homepage": "https://github.com/swimlane/node-microservice-demod#readme",
   "dependencies": {
     "@types/elasticsearch": "^5.0.17",
     "body-parser": "^1.15.2",

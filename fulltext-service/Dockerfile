@@ -1,7 +1,7 @@
 FROM node:6.11-wheezy
 
 LABEL version="0.1"
-LABEL description="user-service docker image"
+LABEL description="fulltext-service docker image"
 LABEL maintainer="Max Mayr <max.mayr@gmail.com>"
 
 RUN npm i -g nodemon node-inspector npm-run-all rimraf
