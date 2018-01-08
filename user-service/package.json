@@ -15,15 +15,15 @@
     "clean:cov": "rimraf coverage",
     "debug": "node-debug",
     "build": "npm-run-all -s build:ts",
-    "build:ts": "tsc",
-    "watch:ts": "tsc --watch",
+    "build:ts": "./node_modules/typescript/bin/tsc",
+    "watch:ts": "./node_modules/typescript/bin/tsc --watch",
     "watch:node": "nodemon --debug --delay 2.5",
     "lint": "tslint ./src/{,**/}*.ts",
     "pretest": "npm-run-all -s clean build"
   },
   "dependencies": {
     "@types/node": "^4.2.23",
-    "bcrypt": "^1.0.3",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.15.2",
     "config": "^1.21.0",
     "cors": "^2.7.1",

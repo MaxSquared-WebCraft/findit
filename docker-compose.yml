@@ -1,0 +1,32 @@
+version: '2'
+
+services:
+#    db:
+#        # which image should we retrieve from Docker repository?
+#        image: postgres
+#
+#        # configure database access based on environment variables
+#        environment:
+#            - POSTGRES_USER=username
+#            - POSTGRES_PASSWORD=password
+
+    user-service:
+        image: node:7
+        working_dir: /user-service
+        command: "node index.js"
+
+        # map host project folder to /app container folder
+        volumes:
+            - .:/app
+
+        # which port should be accessible from the outside?
+        expose:
+            - "3000"
+
+        # start container once `db` service is up
+        depends_on:
+            - db
+
+        # `db` and `node` should be able to communicate
+        links:
+            - db
