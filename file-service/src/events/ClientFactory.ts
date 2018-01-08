@@ -8,10 +8,6 @@ export class ClientFactory {
   private client: Client;
 
   constructor() {
-    this.client = null;
-  }
-
-  connectKafkaClient() {
     this.client = new Client(config.get("kafka.connectionString"));
   }
 

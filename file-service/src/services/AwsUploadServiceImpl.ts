@@ -1,10 +1,9 @@
 import { IFileUploadService, MulterFile } from "../controllers/FileController";
-import { Inject, Service, Token } from "typedi";
+import { Service, Token } from "typedi";
 import * as config from 'config'
 import * as S3 from 'aws-sdk/clients/s3'
 import * as uuidv4 from 'uuid/v4'
-import { UtilService } from "./utilService";
-import { ProducerFactory } from "../events/Producer";
+import { ProducerFactory } from "../events/ProducerFactory";
 import { Producer } from "kafka-node";
 
 interface S3Options {
@@ -30,11 +29,16 @@ export class AwsImpl implements IFileUploadService {
     this.producer = this.producerFactory.getProducer()
   }
 
+  private static getMulterFileType(file: MulterFile) {
+    const { mimetype } = file;
+    return mimetype.substring(mimetype.indexOf('/') + 1)
+  }
+
   async upload(file: MulterFile) {
 
     const res = await this.s3client.upload({
       Bucket: this.s3config.bucket,
-      Key: `${uuidv4()}.${UtilService.getMulterFileType(file)}`,
+      Key: `${uuidv4()}.${AwsImpl.getMulterFileType(file)}`,
       Body: file.buffer,
       ContentType: file.mimetype,
       ACL: 'public-read'

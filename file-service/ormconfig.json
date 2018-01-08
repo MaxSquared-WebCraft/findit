@@ -2,9 +2,9 @@
   "type": "postgres",
   "host": "zaunerserver.ddns.net",
   "port": 35432,
-  "database": "postgres",
-  "username": "admin",
-  "password": "Thisisthesecretmaxpostgrespassword",
+  "database": "fileservice",
+  "username": "fileserviceuser",
+  "password": "ThisisThesoverySecurePasswordforthefsPGuser",
   "synchronize": true,
   "logging": false,
   "entities": [
