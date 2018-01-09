@@ -5,6 +5,7 @@ import * as S3 from 'aws-sdk/clients/s3'
 import * as uuidv4 from 'uuid/v4'
 import { ProducerFactory } from "../events/ProducerFactory";
 import { Producer } from "kafka-node";
+import { PutObjectRequest } from "aws-sdk/clients/s3";
 
 interface S3Options {
   accessKeyId: string,
@@ -29,28 +30,38 @@ export class AwsImpl implements IFileUploadService {
     this.producer = this.producerFactory.getProducer()
   }
 
-  private static getMulterFileType(file: MulterFile) {
+  private static getMulterFileType = (file: MulterFile) => {
     const { mimetype } = file;
     return mimetype.substring(mimetype.indexOf('/') + 1)
-  }
+  };
 
-  async upload(file: MulterFile) {
+  private s3upload = (params: PutObjectRequest) => {
+    return this.s3client.upload(params).promise()
+  };
 
-    const res = await this.s3client.upload({
+  public upload = async (file: MulterFile, userId: string) => {
+
+    const uuid = uuidv4();
+    const params = {
       Bucket: this.s3config.bucket,
-      Key: `${uuidv4()}.${AwsImpl.getMulterFileType(file)}`,
+      Key: `${uuid}.${AwsImpl.getMulterFileType(file)}`,
       Body: file.buffer,
       ContentType: file.mimetype,
       ACL: 'public-read'
-    }).promise();
+    };
 
-    this.producer.send([{
+    const res = await this.s3upload(params);
+
+    const payloads = [{
       topic: 'FILE_UPLOADED',
-      messages: ['file uploaded']
-    }], (err, data) => {
-      if (err) return console.error('error', err);
-      console.log('sent', data);
-    });
+      messages: JSON.stringify({
+        location: res.Location,
+        fileUuid: uuid,
+        userId,
+      })
+    }];
+
+    ProducerFactory.sendProducerEvent(this.producer, payloads);
 
     return res;
   };

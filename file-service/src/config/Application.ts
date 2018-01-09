@@ -18,7 +18,7 @@ export class Application {
     private clientFactory: ClientFactory,
     private fileEventHandler: FileUploadedHandler
   ) {
-    this.fileEventHandler.startHandlers();
+    this.fileEventHandler.registerHandlers();
   }
 
   async start() {

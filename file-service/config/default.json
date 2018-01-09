@@ -8,5 +8,15 @@
   "port": 8080,
   "kafka": {
     "connectionString": "zaunerserver.ddns.net:49312"
+  },
+  "typeOrm": {
+    "type": "postgres",
+    "host": "zaunerserver.ddns.net",
+    "port": 35432,
+    "database": "fileservice",
+    "username": "fileserviceuser",
+    "password": "ThisisThesoverySecurePasswordforthefsPGuser",
+    "synchronize": true,
+    "logging": false
   }
 }
