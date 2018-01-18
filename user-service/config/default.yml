@@ -1,0 +1,6 @@
+ports:
+    http: 8080
+    debug: 5858
+
+# none/debug/info
+loglevel: info

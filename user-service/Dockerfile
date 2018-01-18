@@ -1,6 +1,6 @@
 FROM node:6.11-wheezy
 
-LABEL version="0.1"
+LABEL version="0.2"
 LABEL description="user-service docker image"
 LABEL maintainer="Max Mayr <max.mayr@gmail.com>"
 

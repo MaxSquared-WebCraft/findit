@@ -7,7 +7,7 @@ export class Application {
 
     constructor() {
         this.express = new ExpressConfig();
-        const port =  process.env.HTTP_HOST;
+        const port =  process.env.HTTP_HOST || 8081;
         this.server = this.express.app.listen(port, () => {
             logger.info(`
             ------------

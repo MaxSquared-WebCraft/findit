@@ -25,23 +25,21 @@ console.log('Connecting to Docker: %j', dockerOpts);
 
 monitor({
     onContainerUp(containerInfo, docker) {
-        if (containerInfo.Labels && containerInfo.Labels.api_route) {
-            // register a new route if container has "api_route" label defined
+        if (containerInfo.Labels && containerInfo.Labels.api_routes) {
             const container = docker.getContainer(containerInfo.Id);
-            // get running container details
             container.inspect((err, containerDetails) => {
                 if (err) {
                     console.log('Error getting container details for: %j', containerInfo, err);
                 } else {
                     try {
-                        // prepare and register a new route
-                        const route = {
-                            apiRoute: containerInfo.Labels.api_route,
-                            upstreamUrl: getUpstreamUrl(containerDetails)
-                        };
-
-                        routes[containerInfo.Id] = route;
-                        console.log('Registered new api route: %j', route);
+                        for (let route of containerInfo.Labels.api_routes.split(';')) {
+                            // const r = {
+                            //     apiRoute: route,
+                            //     upstreamUrl: getUpstreamUrl(containerDetails)
+                            // };
+                            routes[route] = getUpstreamUrl(containerDetails);
+                            console.log('Registered new api route: %s --> %s', route, getUpstreamUrl(containerDetails));
+                        }
                     } catch (e) {
                         console.log('Error creating new api route for: %j', containerDetails, e);
                     }
@@ -51,12 +49,14 @@ monitor({
     },
 
     onContainerDown(container) {
-        if (container.Labels && container.Labels.api_route) {
+        if (container.Labels && container.Labels.api_routes) {
             // remove existing route when container goes down
-            const route = routes[container.Id];
-            if (route) {
-                delete routes[container.Id];
-                console.log('Removed api route: %j', route);
+            for (let r of container.Labels.api_routes.split(';')) {
+                const route = routes[r];
+                if (route) {
+                    delete routes[r];
+                    console.log('Removed api route: %j', r);
+                }
             }
         }
     }
@@ -99,7 +99,8 @@ function getUpstreamUrl(containerDetails) {
     const ports = containerDetails.NetworkSettings.Ports;
     for (const id in ports) {
         if (ports.hasOwnProperty(id)) {
-            return 'http://' + containerDetails.NetworkSettings.IPAddress + ':' + id.split('/')[0];
+            // ' + containerDetails.NetworkSettings.IPAddress + ')
+            return 'http://0.0.0.0:' + id.split('/')[0];
         }
     }
 }

@@ -3,12 +3,15 @@ version: '3'
 services:
   zookeeper:
     image: wurstmeister/zookeeper
-#    ports:
-#      - "2181:2181"
+    ports:
+      - "2181:2181"
+
   kafka:
     image: wurstmeister/kafka
-#    ports:
-#      - "9092:9092"
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
     environment:
       KAFKA_ADVERTISED_HOST_NAME: 192.168.99.100
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -19,35 +22,38 @@ services:
   user-db:
     image: mysql:8.0
     volumes:
-       - user_data: /var/lib/mysql
+       - user_data:/var/lib/mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD=root_pass
-      MYSQL_USER=user
-      MYSQL_PASSWORD=password
-      MYSQL_DATABASE=findit
+      MYSQL_ROOT_PASSWORD: root_pass
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: findit
 
   user-service:
     build: ./user-service
     depends_on:
       - user-db
+      - kafka
+    labels:
+      api_routes: /login;/signup;/users;/roles;/user;/role;
     environment:
-      HTTP_HOST=8081
-      KAFKA_HOST=kafka:9092
-      JWT_SECRET=mysupersecret
-      DB_HOST=user-db
-      DB_PORT=3306
-      DB_NAME=findit
-      DB_USER=user
-      DB_PASSWORD=password
+      HTTP_HOST: 8081
+      KAFKA_HOST: kafka:9092
+      JWT_SECRET: mysupersecret
+      DB_HOST: user-db
+      DB_PORT: 3306
+      DB_NAME: findit
+      DB_USER: user
+      DB_PASSWORD: password
 
   api-gateway:
     build: ./api-gateway
     ports:
       - "8080"
     environment:
-      HTTP_HOST=8080
-      JWT_SECRET=mysupersecret
+      HTTP_HOST: 8080
+      JWT_SECRET: mysupersecret
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 

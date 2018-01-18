@@ -15,8 +15,8 @@
     "clean:cov": "rimraf coverage",
     "debug": "node-debug",
     "build": "npm-run-all -s build:ts",
-    "build:ts": "./node_modules/typescript/bin/tsc",
-    "watch:ts": "./node_modules/typescript/bin/tsc --watch",
+    "build:ts": "tsc",
+    "watch:ts": "tsc --watch",
     "watch:node": "nodemon --debug --delay 2.5",
     "lint": "tslint ./src/{,**/}*.ts",
     "pretest": "npm-run-all -s clean build"
