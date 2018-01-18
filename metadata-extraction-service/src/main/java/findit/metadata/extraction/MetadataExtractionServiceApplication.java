@@ -23,28 +23,22 @@ import java.net.URL;
 @ImportResource("classpath:spring.xml")
 @EnableBinding(ExtractorMessaging.class)
 public class MetadataExtractionServiceApplication {
-    private static final String PREFIX = "tempfile";
-    private static final String SUFFIX = ".tmp";
     private final Extractor extractor;
 
     @Autowired
     public MetadataExtractionServiceApplication(Extractor extractor) {
         this.extractor = extractor;
-        try {
-            startDemoExtraction();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public static void main(String[] args) {
         SpringApplication.run(MetadataExtractionServiceApplication.class, args);
     }
 
-    private static File stream2file(InputStream in) throws IOException {
-        final File tempFile = File.createTempFile(PREFIX, SUFFIX);
-        try (FileOutputStream out = new FileOutputStream(tempFile)) {
-            IOUtils.copy(in, out);
+    private static File downloadFileFromURL(URL url) throws IOException {
+        final File tempFile = File.createTempFile("tempfile", ".tmp");
+        try (InputStream in = url.openStream(),
+             FileOutputStream out = new FileOutputStream(tempFile)) {
+             IOUtils.copy(in, out);
         }
         return tempFile;
     }
@@ -52,14 +46,9 @@ public class MetadataExtractionServiceApplication {
     @StreamListener(ExtractorMessaging.FILE_UPLOADED)
     @SendTo(ExtractorMessaging.METADATA_EXTRACTED)
     public MetadataExtractedEvent receivedFileUploaded(FileUploadedEvent fileUploaded) {
-        return null;
-    }
-
-    private void startDemoExtraction() throws IOException {
-        URL url = new URL("https://www.bitcoin.org/bitcoin.pdf");
-        InputStream in = url.openStream();
-        File f = stream2file(in);
-        in.close();
+        MetadataExtractedEvent metadataExtractedEvent = new MetadataExtractedEvent();
+        URL url = new URL(/*ADD API-GATEWAY URL HERE*/ "/file/" + fileUploaded.getFileId());
+        File f = downloadFileFromURL(url);
 
         JSONObject extractionMetadata = extractor.getAll(f);
         f.delete();
@@ -70,9 +59,12 @@ public class MetadataExtractionServiceApplication {
         content = content.replace("\r", " ");
         // remove multiple spaces so only one is present between words
         content = content.replaceAll("\\s{2,}", " ").trim();
-
         extractionMetadata.put("Text", content);
 
-        System.out.println(extractionMetadata);
+        metadataExtractedEvent.setFileId(fileUploaded.getFileId());
+        metadataExtractedEvent.setUserId(fileUploaded.getUserId());
+        metadataExtractedEvent.setMetadata(content);
+
+        return metadataExtractedEvent;
     }
 }

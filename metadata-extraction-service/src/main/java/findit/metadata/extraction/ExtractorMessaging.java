@@ -6,12 +6,12 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.SubscribableChannel;
 
 public interface ExtractorMessaging {
-    String FILE_UPLOADED = "file-uploaded";
-    String METADATA_EXTRACTED = "metadata-extracted";
+    String FILE_UPLOADED = "FILE_UPLOADED";
+    String METADATA_EXTRACTED = "METADATA_EXTRACTED";
 
-    @Input("file-uploaded")
+    @Input("FILE_UPLOADED")
     SubscribableChannel fileUploaded();
 
-    @Output("metadata-extracted")
+    @Output("METADATA_EXTRACTED")
     MessageChannel metadataExtracted();
 }
