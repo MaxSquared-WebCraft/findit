@@ -1,0 +1,46 @@
+{
+  "name": "file-service",
+  "version": "0.0.1",
+  "description": "file handling service",
+  "main": "index.js",
+  "repository": "https://github.com/Maxincredible52/findit",
+  "author": "Mayr Zauner",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "aws-sdk": "^2.176.0",
+    "config": "^1.29.0",
+    "kafka-node": "^2.3.0",
+    "koa": "^2.4.1",
+    "koa-bodyparser": "^4.2.0",
+    "koa-multer": "^1.0.2",
+    "koa-router": "^7.3.0",
+    "multer": "^1.3.0",
+    "pg": "^7.4.0",
+    "reflect-metadata": "^0.1.10",
+    "routing-controllers": "^0.7.6",
+    "typedi": "^0.6.0",
+    "typeorm": "^0.1.9",
+    "typeorm-typedi-extensions": "^0.1.1",
+    "uuid": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/config": "^0.0.33",
+    "@types/kafka-node": "^2.0.3",
+    "@types/koa": "^2.0.43",
+    "@types/koa-bodyparser": "^3.0.26",
+    "@types/koa-router": "^7.0.27",
+    "@types/uuid": "^3.4.3",
+    "concurrently": "^3.5.1",
+    "cross-env": "^5.1.3",
+    "nodemon": "^1.13.3",
+    "typescript": "^2.6.2"
+  },
+  "scripts": {
+    "prestart": "npm run build",
+    "start": "cross-env NODE_ENV=production node index.js",
+    "dev": "concurrently -k -p \"[{name}]\" -n \"type,node\" -c \"blue,red.bold\" \"npm run build:watch\" \"nodemon \"",
+    "build": "node_modules/.bin/tsc",
+    "build:watch": "npm run build -- -w"
+  }
+}
