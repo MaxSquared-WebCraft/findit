@@ -26,7 +26,6 @@ services:
       MYSQL_USER=user
       MYSQL_PASSWORD=password
       MYSQL_DATABASE=findit
-      JWT_SECRET=mysupersecret
 
   user-service:
     build: ./user-service
@@ -35,6 +34,7 @@ services:
     environment:
       HTTP_HOST=8081
       KAFKA_HOST=kafka:9092
+      JWT_SECRET=mysupersecret
       DB_HOST=user-db
       DB_PORT=3306
       DB_NAME=findit
