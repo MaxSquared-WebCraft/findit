@@ -7,7 +7,7 @@ import {createToken} from '../util/RoleHelper';
 import {SignupUser} from '../dtos/SignupUser';
 import {KafkaHandler} from '../kafka/Kafka';
 import * as bcrypt from 'bcryptjs';
-import * as uuid from 'uuid/v4';
+import * as uuid from 'uuid';
 
 @Controller()
 export class AuthController {

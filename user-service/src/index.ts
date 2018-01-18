@@ -1,5 +1,3 @@
-'use strict';
-
 import 'ts-helpers';
 import 'source-map-support/register';
 import 'reflect-metadata';

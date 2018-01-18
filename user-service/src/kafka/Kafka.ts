@@ -3,8 +3,7 @@ import {OrmRepository} from 'typeorm-typedi-extensions';
 import {UserRepository} from '../repositorys/UserRepository';
 import {UserModel} from '../models/UserModel';
 import {logger} from '../common/logging';
-import * as kafka  from 'kafka-node';
-import * as config from 'config';
+import * as kafka from 'kafka-node';
 
 @Service()
 export class KafkaHandler {
@@ -16,12 +15,12 @@ export class KafkaHandler {
     }
 
     async setupKafka() {
-        this.producer = new kafka.Producer(new kafka.Client(config.get('kafka.url').toString()));
+        this.producer = new kafka.Producer(new kafka.Client(process.env.KAFKA_HOST));
         this.producer.on('ready', () => {
             this.setupWhenProducerReady();
         });
 
-        this.consumer = new kafka.Consumer(new kafka.Client(config.get('kafka.url').toString()),
+        this.consumer = new kafka.Consumer(new kafka.Client(process.env.KAFKA_HOST),
             [
                 { topic: 'USER_CREATED' },
                 { topic: 'USER_CHANGED' },
@@ -38,7 +37,6 @@ export class KafkaHandler {
         });
 
         this.consumer.on('message', (message) => {
-            console.log(message.topic, message.value);
             this.handleIncoming(message);
         });
     }
@@ -55,17 +53,17 @@ export class KafkaHandler {
         });
     }
 
-    handleIncoming(event:any) {
-        let obj = JSON.parse(event.value);
+    async handleIncoming(event: any) {
+        const obj = JSON.parse(event.value);
         switch (event.topic) {
             case 'USER_CREATED':
-                this.userRepository.registerUser(new UserModel(obj));
+                await this.userRepository.registerUser(new UserModel(obj));
                 break;
             case 'USER_CHANGED':
-                this.userRepository.save(obj);
+                await this.userRepository.save(obj);
                 break;
             case 'USER_DELETED':
-                this.userRepository.deleteById(obj);
+                await this.userRepository.deleteById(obj);
                 break;
             default:
                 break;

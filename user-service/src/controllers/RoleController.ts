@@ -10,7 +10,7 @@ export class RoleController {
 
     @Get('/')
     async getAll(): Promise<RoleModel[]> {
-        return await this.roleRepository.find();
+        return this.roleRepository.find();
     }
 
     @Get('/:uuid')

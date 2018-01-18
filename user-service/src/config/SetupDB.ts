@@ -2,7 +2,7 @@ import {Connection} from 'typeorm';
 import {RoleModel} from '../models/RoleModel';
 import {UserModel} from '../models/UserModel';
 import * as bcrypt from 'bcryptjs';
-import * as uuid from 'uuid/v4';
+import * as uuid from 'uuid';
 
 export async function setUpDatabase(connection: Connection) {
     const roleRepo = connection.getRepository(RoleModel);

@@ -14,7 +14,6 @@ import {UserModel} from '../models/UserModel';
 import {setUpDatabase} from './SetupDB';
 import {setupLogging} from './Logging';
 import {Container} from 'typedi';
-import * as config from 'config';
 
 export class ExpressConfig {
     app: express.Express;
@@ -35,13 +34,13 @@ export class ExpressConfig {
         useContainer(Container);
         useContainerORM(Container);
 
-        let connection = await createConnection({
-            type: "mysql",
-            host: config.get('mysql.url').toString(),
-            port: 3306,
-            database: 'findit',
-            username: config.get('mysql.user').toString(),
-            password: config.get('mysql.password').toString(),
+        const connection = await createConnection({
+            type: 'mysql',
+            host: process.env.DB_HOST,
+            port: process.env.DB_PORT,
+            database: process.env.DB_NAME,
+            username: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
             synchronize: true,
             logging: false,
             entities: [
@@ -54,15 +53,15 @@ export class ExpressConfig {
 
         useExpressServer(this.app, {
             authorizationChecker: async (action: Action, roles: string[]) => {
-                const token = action.request.headers["Authorization"];
+                const token = action.request.headers.Authorization;
                 const payload = getPayload(token);
 
                 if (payload && payload.uuid && !roles.length)
                     return true;
-                return !!(payload && roles.find(role => payload.role == role).length > 0);
+                return !!(payload && roles.find((role) => payload.role === role).length > 0);
             },
             currentUserChecker: async (action: Action) => {
-                const token = action.request.headers["Authorization"];
+                const token = action.request.headers.Authorization;
                 return getPayload(token);
             },
             controllers: [UserController, RoleController, AuthController]
