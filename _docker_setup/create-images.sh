@@ -2,11 +2,11 @@
 
 eval `docker-machine env manager1`
 
-array=('./movies-service'
-  './cinema-catalog-service'
-  './booking-service'
-  './payment-service'
-  './notification-service'
+array=('./api-gateway'
+  './fulltext-service'
+  './metadata-extraction-service'
+  './file-service'
+  './user-service'
 )
 
 # we go to the root of the project
@@ -20,7 +20,7 @@ for ((i = 0; i < ${#array[@]}; ++i)); do
   SERVICE=$(echo ${array[$i]} | cut -d'/' -f 2)
 
   # we delete the image if it exists already
-  docker rmi crizstian/$SERVICE
+  docker rmi findit/$SERVICE
 
   # we create or recreate our image
   sh ./create-image.sh
@@ -32,10 +32,10 @@ for ((i = 0; i < ${#array[@]}; ++i)); do
   docker tag $IMAGE_ID crizstian/$SERVICE:latest
 
   # we publish our image to our docker hub account
-  docker push crizstian/$SERVICE:latest
+  docker push findit/$SERVICE:latest
 
   # we delete our local image because we are not going to need it
-  # and mantain clean our environment
+  # and mentain clean our environment
   docker rmi $SERVICE
 
   # and we go back to the root again :D
