@@ -65,7 +65,7 @@ monitor({
 // create and start http server
 const server = http.createServer((req, res) => {
     for (const id in routes) {
-        if (routes.hasOwnProperty(id) && handleRoute(routes[id], req, res)) {
+        if (handleRoute(id, req, res)) {
             return;
         }
     }
@@ -79,6 +79,7 @@ server.listen(httpPort);
 // create proxy
 const proxy = httpProxy.createProxyServer();
 proxy.on('error', (err, req, res) => {
+    console.log(err);
     returnError(req, res);
 });
 
@@ -87,9 +88,11 @@ function handleRoute(route, req, res) {
     const url = req.url;
     const parsedUrl = parseurl(req);
 
-    if (parsedUrl.path.indexOf(route.apiRoute) === 0) {
-        req.url = url.replace(route.apiRoute, '');
-        proxy.web(req, res, { target: route.upstreamUrl });
+    console.log('Incoming ' + url + ' check route: ' + route);
+    if (parsedUrl.path.indexOf(route) === 0) {
+        console.log('Matched! routing to:' + routes[route]);
+        // req.url = url.replace(route, '');
+        proxy.web(req, res, { target: routes[route] });
         return true;
     }
 }
@@ -100,7 +103,7 @@ function getUpstreamUrl(containerDetails) {
     for (const id in ports) {
         if (ports.hasOwnProperty(id)) {
             // ' + containerDetails.NetworkSettings.IPAddress + ')
-            return 'http://0.0.0.0:' + id.split('/')[0];
+            return 'http://127.0.0.1:' + id.split('/')[0];
         }
     }
 }
