@@ -1,0 +1,10 @@
+ports:
+    http: 8080
+    debug: 5858
+
+elasticsearch:
+    url: '192.168.99.100:9200'
+    log: 'trace'
+
+# none/debug/info
+loglevel: info

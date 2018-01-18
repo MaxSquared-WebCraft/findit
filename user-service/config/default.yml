@@ -1,0 +1,21 @@
+ports:
+    http: 8080
+    debug: 5858
+
+auth:
+    jwt_secret: 'supersecret'
+    google:
+          consumerKey: 'get_your_own'
+          consumerSecret: 'get_your_own'
+          callbackURL: "http://127.0.0.1:3000/auth/twitter/callback"
+
+kafka:
+    url: 'zaunerserver.ddns.net:49312'
+
+mysql:
+    url: '192.168.99.100'
+    user: 'user'
+    password: 'password'
+
+# none/debug/info
+loglevel: info
