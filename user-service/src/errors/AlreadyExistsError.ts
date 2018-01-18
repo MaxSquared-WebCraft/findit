@@ -13,6 +13,6 @@ export class AlreadyExistsError extends HttpError {
         return {
             status: this.httpCode,
             failedOperation: this.text
-        }
+        };
     }
 }

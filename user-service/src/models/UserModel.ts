@@ -1,4 +1,5 @@
 import {
+    Entity,
     Column,
     CreateDateColumn,
     ManyToOne,
@@ -6,7 +7,6 @@ import {
     UpdateDateColumn
 } from 'typeorm';
 import {RoleModel} from './RoleModel';
-import {Entity} from 'typeorm/decorator/entity/Entity';
 
 @Entity()
 export class UserModel {
@@ -44,7 +44,7 @@ export class UserModel {
     @UpdateDateColumn()
     editedDate: Date;
 
-    @ManyToOne(type => RoleModel, role => role.users, { eager: true })
+    @ManyToOne((type) => RoleModel, (role) => role.users, { eager: true })
     role: RoleModel;
 
     @Column()
@@ -53,10 +53,10 @@ export class UserModel {
     @Column({nullable: true})
     apiKey: string;
 
-    constructor(data?:any) {
+    constructor(data?: any) {
         if (data) {
             this.id = data.id ? data.id : null;
-            this.uuid = data.uuid ? data.uuid : "";
+            this.uuid = data.uuid ? data.uuid : '';
             this.firstName = data.firstName ? data.firstName : null;
             this.lastName = data.lastName ? data.lastName : null;
             this.email = data.email ? data.email : null;

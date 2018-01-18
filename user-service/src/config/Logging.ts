@@ -1,9 +1,8 @@
 import * as winston from 'winston';
-import * as config from 'config';
 import * as expressWinston from 'express-winston';
 import {logger} from '../common/logging';
 
-const level = config.get('loglevel');
+const level: string = 'info';
 
 export function setupLogging(app) {
     // Development Logger

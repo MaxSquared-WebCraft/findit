@@ -33,15 +33,26 @@ export class ElasticSearchService {
         return elastic.indices.putMapping(mapping);
     }
 
-    async addDocument(index: string, document: any) {
+    async addDocument(index: string, fileId: string, document: any) {
         const elastic = await this.elasticSearch.getElastic();
         return elastic.index({
             index,
             type: 'document',
             body: {
-                uuid: document.uuid,
+                uuid: fileId,
                 title: document.title,
                 content: document.content
+            }
+        });
+    }
+
+    async deleteDocument(index: string, fileId: string) {
+        const elastic = await this.elasticSearch.getElastic();
+        return elastic.index({
+            index,
+            type: 'document',
+            body: {
+                uuid: fileId
             }
         });
     }
@@ -72,21 +83,21 @@ export class ElasticSearchService {
         });
     }
 
-    async addDocumentToUser(userId: string, document: any) {
+    async addDocumentToUser(userId: string, fileId: string, document: any) {
         const indexExists: boolean = await this.doesIndexExist(userId);
         if (!indexExists) {
             await this.createIndex(userId);
         }
 
-        return this.addDocument(userId, document);
+        return this.addDocument(userId, fileId, document);
     }
 
-    async deleteDocumentFromUser(userId: string, document: any) {
+    async deleteDocumentFromUser(userId: string, fileId: string) {
         const indexExists: boolean = await this.doesIndexExist(userId);
         if (!indexExists) {
             await this.createIndex(userId);
         }
 
-        return this.addDocument(userId, document);
+        return this.deleteDocument(userId, fileId);
     }
 }

@@ -6,8 +6,8 @@ import {UserModel} from '../models/UserModel';
 import {createToken} from '../util/RoleHelper';
 import {SignupUser} from '../dtos/SignupUser';
 import {KafkaHandler} from '../kafka/Kafka';
-import * as bcrypt  from 'bcrypt';
-import * as uuid from 'uuid/v4';
+import * as bcrypt from 'bcryptjs';
+import * as uuid from 'uuid';
 
 @Controller()
 export class AuthController {
@@ -19,10 +19,11 @@ export class AuthController {
     @Post('/signup')
     async signUp(@Body({ required: true }) registerUser: SignupUser): Promise<any> {
         if (await this.userRepository.findOne({email: registerUser.email})) {
-            throw new AlreadyExistsError("Email is already in use.")
+            throw new AlreadyExistsError('Email is already in use.');
         }
-        registerUser.password = bcrypt.hashSync(registerUser.password, 10);
-        let userObj:any = registerUser;
+        const salt = bcrypt.genSaltSync(10);
+        registerUser.password = bcrypt.hashSync(registerUser.password, salt);
+        const userObj: any = registerUser;
         userObj.uuid = uuid();
         this.kafka.sendEvent('USER_CREATED', userObj);
         return Promise.resolve({success: true});
@@ -30,12 +31,9 @@ export class AuthController {
 
     @Post('/login')
     async login(@Body({ required: true }) loginUser: SignupUser): Promise<any> {
-        let user:UserModel = await this.userRepository.findOne({email: loginUser.email});
-        if (!user && bcrypt.compare(loginUser.password, user.password, (err, isPasswordMatch) => {
-                if (err) throw new BadRequestError("Can't compare passwords");
-                return isPasswordMatch;
-            })) {
-            throw new Error("Ungültige User/Passwort kombination.")
+        const user: UserModel = await this.userRepository.findOne({email: loginUser.email});
+        if (!user && bcrypt.compareSync(loginUser.password, user.password)) {
+            throw new Error('Ungültige User/Passwort kombination.');
         }
         return Promise.resolve({token: createToken(user)});
     }

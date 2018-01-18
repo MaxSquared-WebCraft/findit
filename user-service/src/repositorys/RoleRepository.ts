@@ -5,5 +5,4 @@ import {RoleModel} from '../models/RoleModel';
 @Service()
 @EntityRepository(RoleModel)
 export class RoleRepository extends Repository<RoleModel> {
-
 }

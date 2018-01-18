@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@types/node": "^4.2.23",
-    "bcrypt": "^1.0.3",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.15.2",
     "config": "^1.21.0",
     "cors": "^2.7.1",

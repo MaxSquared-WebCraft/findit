@@ -13,7 +13,7 @@ export class UserController {
     @Get('/')
     @Authorized('ADMIN')
     async getAll(): Promise<UserModel[]> {
-        return await this.userRepository.find({deleted: false});
+        return this.userRepository.find({deleted: false});
     }
 
     @Get('/:id')
@@ -42,7 +42,7 @@ export class UserController {
         if(currentUser.role !== 'ADMIN' || currentUser.uuid !== uuid) {
             throw new ForbiddenError();
         }
-        let user = await this.userRepository.findOne({uuid});
+        const user = await this.userRepository.findOne({uuid});
         if(user) {
             this.kafka.sendEvent('USER_DELETED', uuid);
         }

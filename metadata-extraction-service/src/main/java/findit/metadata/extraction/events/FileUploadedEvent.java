@@ -4,6 +4,11 @@ public class FileUploadedEvent {
     private String userId;
     private String fileId;
 
+    public FileUploadedEvent(String userId, String fileId) {
+        this.userId = userId;
+        this.fileId = fileId;
+    }
+
     public String getUserId() {
         return userId;
     }

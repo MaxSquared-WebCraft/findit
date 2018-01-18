@@ -1,5 +1,4 @@
-import {Column, CreateDateColumn, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn} from 'typeorm';
-import {Entity} from 'typeorm/decorator/entity/Entity';
+import {Entity, Column, CreateDateColumn, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn} from 'typeorm';
 import {UserModel} from './UserModel';
 
 @Entity()
@@ -13,7 +12,7 @@ export class RoleModel {
     @Column()
     isDefault: boolean;
 
-    @OneToMany(type => UserModel, user => user.role)
+    @OneToMany((type) => UserModel, (user) => user.role)
     users: UserModel[];
 
     @CreateDateColumn()
