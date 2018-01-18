@@ -15,29 +15,6 @@ function setup-swarm {
   cd ..
 }
 
-function setup-mongo {
-  echo '···························'
-  echo '·· <<<< git clone the mongodb cluster  ··'
-  echo '···························'
-
-  rm -rf mongo-replica-with-docker
-
-  # next we download our mongo-replica-set configuration
-  git clone https://github.com/Crizstian/mongo-replica-with-docker.git
-
-  echo '···························'
-  echo '·· setting up the mongodb cluster  >>>> ··'
-  echo '···························'
-  # we go into the folder
-  cd mongo-replica-with-docker
-
-  # we create and init our mongodb replica set cluster
-  (bash < create-replica-set.sh)
-
-  # we go back to the root project
-  cd ..
-}
-
 function setup-images {
 
     # go inside the docker folder again
@@ -79,7 +56,6 @@ function status {
 
 function main {
   setup-swarm
-  setup-mongo
   setup-images
   setup-services
   status

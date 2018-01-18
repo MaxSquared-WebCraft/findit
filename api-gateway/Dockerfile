@@ -1,17 +1,18 @@
-FROM node:7.5.0-alpine
+FROM node:6.11-wheezy
 
-ENV HOME=/home/nupp
+LABEL version="0.1"
+LABEL description="api-gateway docker image for findit"
+LABEL maintainer="Max Mayr <max.mayr@gmail.com>"
 
-COPY package.json npm-shrinkwrap.json $HOME/app/
+RUN npm i -g nodemon node-inspector npm-run-all rimraf
 
-COPY src/ $HOME/app/src
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
 
-ADD https://github.com/Yelp/dumb-init/releases/download/v1.1.1/dumb-init_1.1.1_amd64 /usr/local/bin/dumb-init
+COPY package*.json .
+RUN cd /usr/src/app && npm install
 
-WORKDIR $HOME/app
+COPY . /usr/src/app
 
-RUN chmod +x /usr/local/bin/dumb-init && \
-    npm cache clean && \
-    npm install --silent --progress=false --production
-
-CMD ["dumb-init", "npm", "start"]
+EXPOSE 8080
+CMD [ "npm", "start" ]
