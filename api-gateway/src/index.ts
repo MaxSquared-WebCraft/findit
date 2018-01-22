@@ -14,12 +14,7 @@ if (!dockerOpts.socketPath) {
 }
 
 const httpPort = process.env.HTTP_HOST || 8080;
-let routes = {
-    // '303c56be38b748576be1598eb9d6a746fb2792c5c9c6d83608ed8f2b5501b063' : {
-    //     apiRoute: '/service1',
-    //     upstreamUrl: 'http://127.0.0.1:8887'
-    // }
-};
+let routes = {};
 
 console.log('Connecting to Docker: %j', dockerOpts);
 
@@ -33,10 +28,6 @@ monitor({
                 } else {
                     try {
                         for (let route of containerInfo.Labels.api_routes.split(';')) {
-                            // const r = {
-                            //     apiRoute: route,
-                            //     upstreamUrl: getUpstreamUrl(containerDetails)
-                            // };
                             routes[route] = getUpstreamUrl(containerDetails);
                             console.log('Registered new api route: %s --> %s', route, getUpstreamUrl(containerDetails));
                         }
@@ -91,7 +82,6 @@ function handleRoute(route, req, res) {
     console.log('Incoming ' + url + ' check route: ' + route);
     if (parsedUrl.path.indexOf(route) === 0) {
         console.log('Matched! routing to:' + routes[route]);
-        // req.url = url.replace(route, '');
         proxy.web(req, res, { target: routes[route] });
         return true;
     }
@@ -102,8 +92,8 @@ function getUpstreamUrl(containerDetails) {
     const ports = containerDetails.NetworkSettings.Ports;
     for (const id in ports) {
         if (ports.hasOwnProperty(id)) {
-            // ' + containerDetails.NetworkSettings.IPAddress + ')
-            return 'http://127.0.0.1:' + id.split('/')[0];
+            return 'http://' +
+                containerDetails.NetworkSettings.Networks['findit_be-network'].IPAddress + ':' + id.split('/')[0];
         }
     }
 }
