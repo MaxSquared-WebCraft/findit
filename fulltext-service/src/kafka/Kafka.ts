@@ -14,9 +14,9 @@ export class KafkaHandler {
     }
 
     async setupKafka() {
-        this.producer = new kafka.Producer(new kafka.Client(config.get('kafka.url').toString()));
+        this.producer = new kafka.Producer(new kafka.Client(process.env.KAFKA_HOST));
         this.producer.on('ready', () => { this.setupWhenProducerReady(); });
-        this.consumer = new kafka.Consumer(new kafka.Client(config.get('kafka.url').toString()),
+        this.consumer = new kafka.Consumer(new kafka.Client(process.env.KAFKA_HOST),
             [{ topic: 'METADATA_EXTRACTED' }],
             { groupId: 'fulltext-service-consumer' + Math.random().toString(36).substring(7) }
         );
@@ -25,7 +25,6 @@ export class KafkaHandler {
     setupWhenProducerReady() {
         this.producer.on('error', (err) => { logger.log('error', err); });
         this.consumer.on('message', (message) => {
-            console.log(message.topic, message.value);
             this.handleIncoming(message);
         });
     }

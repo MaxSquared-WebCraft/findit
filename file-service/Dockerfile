@@ -1,7 +1,7 @@
 FROM node:8.9.4
 
 LABEL version="0.2"
-LABEL description="user-service docker image"
+LABEL description="file-service docker image"
 LABEL maintainer="Max Mayr <max.mayr@gmail.com>"
 
 RUN mkdir -p /usr/src/app

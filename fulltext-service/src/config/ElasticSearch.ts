@@ -1,4 +1,3 @@
-import * as config from 'config';
 import {Service} from 'typedi';
 import * as elasticsearch from 'elasticsearch';
 import {logger} from '../common/logging';
@@ -6,8 +5,8 @@ import {logger} from '../common/logging';
 @Service()
 export class ElasticSearch {
     private elasticClient: elasticsearch.Client;
-    private url: string = config.get('elasticsearch.url').toString();
-    private logLevel: string = config.get('elasticsearch.log').toString();
+    private url: string = process.env.ELASTIC_URL;
+    private logLevel: string =  process.env.ELASTIC_LOG_LEVEL;
 
     async getElastic() {
         if (!this.elasticClient) {

@@ -23,11 +23,28 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.0.0
+    volumes:
+      - elastic_data:/usr/share/elasticsearch/data
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      - be-network
+
+#  kibana:
+#    image: docker.elastic.co/kibana/kibana:6.0.0
+#    ports:
+#      - 5601:5601
+#    networks:
+#      - be-network
+#    depends_on:
+#      - elasticsearch
+
   user-db:
     image: mysql:8.0
     volumes:
        - user_data:/var/lib/mysql
-    restart: always
     networks:
       - be-network
     environment:
@@ -35,6 +52,40 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
       MYSQL_DATABASE: findit
+
+  file-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pass
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: fileservice
+    networks:
+      - be-network
+    volumes:
+      - file_data:/var/lib/mysql
+
+  file-service:
+    build: ./file-service
+    depends_on:
+      - file-db
+      - kafka
+    labels:
+      api_routes: /file
+    networks:
+      - be-network
+    environment:
+      HTTP_HOST: 8081
+      KAFKA_HOST: kafka:9092
+      DB_HOST: file-db
+      DB_PORT: 3306
+      DB_NAME: fileservice
+      DB_USER: user
+      DB_PASSWORD: password
+      AWS_ACCESS_KEY: AKIAJXB2DYB2EF5SBNCA
+      AWS_SECRET_ACCESS_KEY: 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
+      AWS_BUCKET: findit.zaunermax.at
+      AWS_REGION: eu-west-1
 
   user-service:
     build: ./user-service
@@ -55,6 +106,21 @@ services:
       DB_USER: user
       DB_PASSWORD: password
 
+  fulltext-service:
+    build: ./fulltext-service
+    depends_on:
+      - kafka
+      - elasticsearch
+    labels:
+      api_routes: /search
+    networks:
+      - be-network
+    environment:
+      HTTP_HOST: 8082
+      KAFKA_HOST: kafka:9092
+      ELASTIC_URL: elasticsearch
+      ELASTIC_LOG_LEVEL: trace
+
   api-gateway:
     build: ./api-gateway
     ports:
@@ -68,6 +134,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
+  file_data:
   user_data:
+  elastic_data:
 networks:
   be-network:

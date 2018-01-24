@@ -1,7 +1,7 @@
 import { Get, HeaderParam, JsonController, Param, Post, UploadedFile } from "routing-controllers";
 import { Inject } from "typedi";
-import { AwsUploadServiceImpl } from "../services/awsUploadServiceImpl";
 import { Document } from "../entities/Document";
+import {AwsUploadServiceImpl} from '../services/AwsUploadServiceImpl';
 
 export interface MulterFile {
   fieldname: string;
