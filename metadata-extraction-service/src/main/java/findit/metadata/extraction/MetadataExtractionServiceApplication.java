@@ -36,7 +36,7 @@ public class MetadataExtractionServiceApplication {
 
     private static File downloadFileFromURL(URL url) throws IOException {
         final File tempFile = File.createTempFile("tempfile", ".tmp");
-        try (InputStream in = url.openStream(),
+        try (InputStream in = url.openStream();
              FileOutputStream out = new FileOutputStream(tempFile)) {
              IOUtils.copy(in, out);
         }
@@ -47,24 +47,29 @@ public class MetadataExtractionServiceApplication {
     @SendTo(ExtractorMessaging.METADATA_EXTRACTED)
     public MetadataExtractedEvent receivedFileUploaded(FileUploadedEvent fileUploaded) {
         MetadataExtractedEvent metadataExtractedEvent = new MetadataExtractedEvent();
-        URL url = new URL(/*ADD API-GATEWAY URL HERE*/ "/file/" + fileUploaded.getFileId());
-        File f = downloadFileFromURL(url);
+        JSONObject extractionMetadata = null;
+        try {
+            URL url = new URL("http://file-service/file/" + fileUploaded.getFileId());
+            File f = downloadFileFromURL(url);
 
-        JSONObject extractionMetadata = extractor.getAll(f);
-        f.delete();
+            extractionMetadata = extractor.getAll(f);
+            f.delete();
+        } catch (Exception e) {
+        }
 
-        String content = (String) extractionMetadata.get("Text");
-        // Remove new lines
-        content = content.replace("\n", " ");
-        content = content.replace("\r", " ");
-        // remove multiple spaces so only one is present between words
-        content = content.replaceAll("\\s{2,}", " ").trim();
-        extractionMetadata.put("Text", content);
+        if (extractionMetadata != null) {
+            String content = (String) extractionMetadata.get("Text");
+            // Remove new lines
+            content = content.replace("\n", " ");
+            content = content.replace("\r", " ");
+            // remove multiple spaces so only one is present between words
+            content = content.replaceAll("\\s{2,}", " ").trim();
+            extractionMetadata.put("Text", content);
 
-        metadataExtractedEvent.setFileId(fileUploaded.getFileId());
-        metadataExtractedEvent.setUserId(fileUploaded.getUserId());
-        metadataExtractedEvent.setMetadata(content);
-
+            metadataExtractedEvent.setFileId(fileUploaded.getFileId());
+            metadataExtractedEvent.setUserId(fileUploaded.getUserId());
+            metadataExtractedEvent.setMetadata(content);
+        }
         return metadataExtractedEvent;
     }
 }
