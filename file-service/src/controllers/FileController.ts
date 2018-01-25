@@ -25,7 +25,7 @@ export class FileController {
 
   @Post('/')
   async addFile(@UploadedFile("document") file: MulterFile,
-                @HeaderParam("userId") userId: string) {
+                @HeaderParam("x-user") userId: string) {
     return this.uploadService.upload(file, userId);
   }
 

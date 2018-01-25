@@ -1,4 +1,4 @@
-import {Controller, Get, QueryParam} from 'routing-controllers';
+import {Controller, Get, HeaderParam, QueryParam} from 'routing-controllers';
 import {Inject} from 'typedi';
 import {logger} from '../common/logging';
 import {ElasticSearchService} from '../services/ElasticSearchService';
@@ -14,8 +14,8 @@ export class DocumentController {
     }
 
     @Get('/')
-    async getSuggestionsForUser(@QueryParam('user') id: string,
+    async getSuggestionsForUser(@HeaderParam('x-user') userId: string,
                                 @QueryParam('text') text: string): Promise<any> {
-        return this.documentService.getSuggestions(id, text);
+        return this.documentService.getSuggestions(userId, text);
     }
 }

@@ -24,22 +24,11 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.0.0
+    image: bitnami/elasticsearch:6-master
     volumes:
-      - elastic_data:/usr/share/elasticsearch/data
-    environment:
-      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      - elastic_data:/bitnami
     networks:
       - be-network
-
-#  kibana:
-#    image: docker.elastic.co/kibana/kibana:6.0.0
-#    ports:
-#      - 5601:5601
-#    networks:
-#      - be-network
-#    depends_on:
-#      - elasticsearch
 
   user-db:
     image: mysql:8.0
@@ -71,7 +60,8 @@ services:
       - file-db
       - kafka
     labels:
-      api_routes: /file
+      - "api_routes=/file"
+      - "secure=yes"
     networks:
       - be-network
     environment:
@@ -93,7 +83,8 @@ services:
       - user-db
       - kafka
     labels:
-      api_routes: /login;/signup;/users;/roles;/user;/role
+      - "api_routes=/login;/signup;/users;/roles;/user;/role"
+      - "secure=no"
     networks:
       - be-network
     environment:
@@ -112,7 +103,8 @@ services:
       - kafka
       - elasticsearch
     labels:
-      api_routes: /search
+      - "api_routes=/search"
+      - "secure=yes"
     networks:
       - be-network
     environment:
