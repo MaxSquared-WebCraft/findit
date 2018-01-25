@@ -1,6 +1,5 @@
 import { Inject, Service } from "typedi";
 import { KoaServerImpl } from "../services/KoaServerImpl";
-import * as config from 'config'
 import { ClientFactory } from "../events/ClientFactory";
 import { FileUploadedHandler } from "../services/FileEventHandler";
 
@@ -22,6 +21,6 @@ export class Application {
   }
 
   async start() {
-    this.server.start(config.get("port"));
+    this.server.start(+process.env.HTTP_HOST);
   }
 }

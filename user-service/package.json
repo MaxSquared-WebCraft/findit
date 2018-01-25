@@ -4,22 +4,14 @@
   "description": "User and authorization service for findit",
   "main": "index.js",
   "scripts": {
-    "check": "npm-check --skip-unused",
-    "preinstall": "npm i -g nodemon node-inspector rimraf npm-run-all npm-check",
-    "start": "npm-run-all -s clean build start:simple",
+    "start": "npm-run-all -s build start:simple",
     "start:simple": "node .",
-    "start:dev": "npm-run-all -s clean build -p watch:*",
-    "start:debug": "npm-run-all -s clean build -p watch:* debug",
-    "clean": "npm-run-all -p clean:*",
-    "clean:dist": "rimraf dist",
-    "clean:cov": "rimraf coverage",
-    "debug": "node-debug",
-    "build": "npm-run-all -s build:ts",
-    "build:ts": "tsc",
+    "start:dev": "npm-run-all -s build -p watch:*",
+    "start:debug": "npm-run-all -s build -p watch:* debug",
+    "build": "tsc",
     "watch:ts": "tsc --watch",
     "watch:node": "nodemon --debug --delay 2.5",
-    "lint": "tslint ./src/{,**/}*.ts",
-    "pretest": "npm-run-all -s clean build"
+    "lint": "tslint ./src/{,**/}*.ts"
   },
   "dependencies": {
     "@types/node": "^4.2.23",
@@ -69,7 +61,6 @@
     "ts-helpers": "^1.1.1",
     "tslint": "^5.8.0",
     "typescript": "^2.6.2",
-    "npm-run-all": "^3.0.0",
-    "rimraf": "^2.0.0"
+    "npm-run-all": "^3.0.0"
   }
 }

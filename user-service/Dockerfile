@@ -1,10 +1,8 @@
-FROM node:6.11-wheezy
+FROM node:8.9.4
 
 LABEL version="0.2"
 LABEL description="user-service docker image"
 LABEL maintainer="Max Mayr <max.mayr@gmail.com>"
-
-RUN npm i -g nodemon node-inspector npm-run-all rimraf
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app

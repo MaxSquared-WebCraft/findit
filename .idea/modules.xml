@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/findit.iml" filepath="$PROJECT_DIR$/.idea/findit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/untitled/api-gateway.iml" filepath="$PROJECT_DIR$/untitled/api-gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/file-service/file-service.iml" filepath="$PROJECT_DIR$/file-service/file-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fulltext-service/fulltext-service.iml" filepath="$PROJECT_DIR$/fulltext-service/fulltext-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/metadata-extraction-service/metadata-extraction-service.iml" filepath="$PROJECT_DIR$/metadata-extraction-service/metadata-extraction-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/user-service/user-service.iml" filepath="$PROJECT_DIR$/user-service/user-service.iml" />
     </modules>
   </component>
 </project>

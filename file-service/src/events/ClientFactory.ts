@@ -1,6 +1,5 @@
 import { Service } from "typedi";
 import { Client } from "kafka-node";
-import * as config from "config";
 
 @Service()
 export class ClientFactory {
@@ -8,7 +7,7 @@ export class ClientFactory {
   private client: Client;
 
   constructor() {
-    this.client = new Client(config.get("kafka.connectionString"));
+    this.client = new Client(process.env.KAFKA_HOST);
   }
 
   getClient() {

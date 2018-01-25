@@ -2,7 +2,7 @@ import * as jwt from 'jsonwebtoken';
 import {UserModel} from '../models/UserModel';
 import {MethodNotAllowedError} from 'routing-controllers';
 
-const JWT_SECRET: string = process.env.DB_HOST;
+const JWT_SECRET: string = process.env.JWT_SECRET;
 
 export function assertIsAdmin(token: string) {
     const payload = getPayload(token);
@@ -39,5 +39,5 @@ export function createToken(user: UserModel): string {
         uuid: user.uuid,
         role: user.role.name
     };
-    return jwt.sign(payload, JWT_SECRET);
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: '1d' });
 }

@@ -1,6 +1,5 @@
 import { IFileUploadService, MulterFile } from "../controllers/FileController";
 import { Service, Token } from "typedi";
-import * as config from 'config'
 import * as S3 from 'aws-sdk/clients/s3'
 import * as uuidv4 from 'uuid/v4'
 import { ProducerFactory } from "../events/ProducerFactory";
@@ -24,19 +23,20 @@ export const AwsUploadServiceImpl = new Token<IFileUploadService>();
 export class AwsImpl implements IFileUploadService {
 
   private producer: Producer;
-
-  private s3config: S3Options;
+  private s3config: S3Options = {
+      accessKeyId: process.env.AWS_ACCESS_KEY,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      bucket: process.env.AWS_BUCKET,
+      region: process.env.AWS_REGION
+  };
   private s3client: S3;
   private userRepository: Repository<User>;
 
   constructor(@OrmConnection() connection: Connection,
               private producerFactory: ProducerFactory) {
-
-    this.s3config = config.get('s3');
     this.s3client = new S3(this.s3config);
 
     this.producer = this.producerFactory.getProducer();
-
     this.userRepository = connection.getRepository(User);
   }
 

@@ -5,6 +5,8 @@ services:
     image: wurstmeister/zookeeper
     ports:
       - "2181:2181"
+    networks:
+      - be-network
 
   kafka:
     image: wurstmeister/kafka
@@ -12,6 +14,8 @@ services:
       - "9092:9092"
     depends_on:
       - zookeeper
+    networks:
+      - be-network
     environment:
       KAFKA_ADVERTISED_HOST_NAME: 192.168.99.100
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -19,16 +23,59 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
+  elasticsearch:
+    image: bitnami/elasticsearch:6-master
+    volumes:
+      - elastic_data:/bitnami
+    networks:
+      - be-network
+
   user-db:
     image: mysql:8.0
     volumes:
        - user_data:/var/lib/mysql
-    restart: always
+    networks:
+      - be-network
     environment:
       MYSQL_ROOT_PASSWORD: root_pass
       MYSQL_USER: user
       MYSQL_PASSWORD: password
       MYSQL_DATABASE: findit
+
+  file-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pass
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: fileservice
+    networks:
+      - be-network
+    volumes:
+      - file_data:/var/lib/mysql
+
+  file-service:
+    build: ./file-service
+    depends_on:
+      - file-db
+      - kafka
+    labels:
+      - "api_routes=/file"
+      - "secure=yes"
+    networks:
+      - be-network
+    environment:
+      HTTP_HOST: 8081
+      KAFKA_HOST: kafka:9092
+      DB_HOST: file-db
+      DB_PORT: 3306
+      DB_NAME: fileservice
+      DB_USER: user
+      DB_PASSWORD: password
+      AWS_ACCESS_KEY: AKIAJXB2DYB2EF5SBNCA
+      AWS_SECRET_ACCESS_KEY: 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
+      AWS_BUCKET: findit.zaunermax.at
+      AWS_REGION: eu-west-1
 
   user-service:
     build: ./user-service
@@ -36,7 +83,10 @@ services:
       - user-db
       - kafka
     labels:
-      api_routes: /login;/signup;/users;/roles;/user;/role
+      - "api_routes=/login;/signup;/users;/roles;/user;/role"
+      - "secure=no"
+    networks:
+      - be-network
     environment:
       HTTP_HOST: 8081
       KAFKA_HOST: kafka:9092
@@ -47,6 +97,22 @@ services:
       DB_USER: user
       DB_PASSWORD: password
 
+  fulltext-service:
+    build: ./fulltext-service
+    depends_on:
+      - kafka
+      - elasticsearch
+    labels:
+      - "api_routes=/search"
+      - "secure=yes"
+    networks:
+      - be-network
+    environment:
+      HTTP_HOST: 8082
+      KAFKA_HOST: kafka:9092
+      ELASTIC_URL: elasticsearch
+      ELASTIC_LOG_LEVEL: trace
+
   api-gateway:
     build: ./api-gateway
     ports:
@@ -54,8 +120,14 @@ services:
     environment:
       HTTP_HOST: 8080
       JWT_SECRET: mysupersecret
+    networks:
+      - be-network
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
-    user_data:
+  file_data:
+  user_data:
+  elastic_data:
+networks:
+  be-network:

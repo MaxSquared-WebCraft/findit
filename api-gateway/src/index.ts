@@ -2,6 +2,7 @@ import * as monitor from 'node-docker-monitor';
 import * as http from 'http';
 import * as httpProxy from 'http-proxy';
 import * as parseurl from 'parseurl';
+import * as jwt from 'jsonwebtoken';
 
 // process input via env vars
 const dockerOpts: any = { socketPath: process.env.DOCKER_SOCKET };
@@ -14,12 +15,7 @@ if (!dockerOpts.socketPath) {
 }
 
 const httpPort = process.env.HTTP_HOST || 8080;
-let routes = {
-    // '303c56be38b748576be1598eb9d6a746fb2792c5c9c6d83608ed8f2b5501b063' : {
-    //     apiRoute: '/service1',
-    //     upstreamUrl: 'http://127.0.0.1:8887'
-    // }
-};
+let routes = {};
 
 console.log('Connecting to Docker: %j', dockerOpts);
 
@@ -33,11 +29,11 @@ monitor({
                 } else {
                     try {
                         for (let route of containerInfo.Labels.api_routes.split(';')) {
-                            // const r = {
-                            //     apiRoute: route,
-                            //     upstreamUrl: getUpstreamUrl(containerDetails)
-                            // };
-                            routes[route] = getUpstreamUrl(containerDetails);
+                            routes[route] = {
+                                route,
+                                url: getUpstreamUrl(containerDetails),
+                                secure: containerInfo.Labels.secure === 'yes'
+                            };
                             console.log('Registered new api route: %s --> %s', route, getUpstreamUrl(containerDetails));
                         }
                     } catch (e) {
@@ -65,7 +61,7 @@ monitor({
 // create and start http server
 const server = http.createServer((req, res) => {
     for (const id in routes) {
-        if (handleRoute(id, req, res)) {
+        if (handleRoute(routes[id], req, res)) {
             return;
         }
     }
@@ -84,17 +80,38 @@ proxy.on('error', (err, req, res) => {
 });
 
 // proxy HTTP request / response to / from destination upstream service if route matches
-function handleRoute(route, req, res) {
+function handleRoute(route, req, res): boolean {
     const url = req.url;
     const parsedUrl = parseurl(req);
+    const authToken = req.headers.authorization;
+    let decoded = null;
 
-    console.log('Incoming ' + url + ' check route: ' + route);
-    if (parsedUrl.path.indexOf(route) === 0) {
-        console.log('Matched! routing to:' + routes[route]);
-        // req.url = url.replace(route, '');
-        proxy.web(req, res, { target: routes[route] });
+    if(authToken) {
+        // decode token of available
+        try {
+            decoded = jwt.verify(authToken, process.env.JWT_SECRET);
+        } catch (err) {
+            return false;
+        }
+
+        console.log(decoded); // bar
+        // set token for role and userid
+        req.headers['x-user'] = decoded.uuid;
+        req.headers['x-role'] = decoded.role;
+    }
+
+    console.log(parsedUrl.path, route);
+
+    if (parsedUrl.path.indexOf(route.route) === 0) {
+        console.log('Matched! routing to: ' + route.url);
+        if (route.secure && !decoded) {
+            return false;
+        }
+
+        proxy.web(req, res, { target: route.url });
         return true;
     }
+    return false;
 }
 
 // generate upstream url from containerDetails
@@ -102,8 +119,8 @@ function getUpstreamUrl(containerDetails) {
     const ports = containerDetails.NetworkSettings.Ports;
     for (const id in ports) {
         if (ports.hasOwnProperty(id)) {
-            // ' + containerDetails.NetworkSettings.IPAddress + ')
-            return 'http://127.0.0.1:' + id.split('/')[0];
+            return 'http://' +
+                containerDetails.NetworkSettings.Networks['findit_be-network'].IPAddress + ':' + id.split('/')[0];
         }
     }
 }
