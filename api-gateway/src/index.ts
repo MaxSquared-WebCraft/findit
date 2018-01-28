@@ -111,7 +111,7 @@ function handleRoute(route, req, res): boolean {
 
     if (req.method === 'OPTIONS') {
       res.setHeader('Access-Control-Allow-Origin', '*');
-      res.setHeader('Access-Control-Allow-Headers', '*');
+      res.setHeader('Access-Control-Allow-Headers', 'authorization');
       res.setHeader('Access-Control-Request-Method', '*');
       res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
     }
