@@ -60,6 +60,10 @@ monitor({
 
 // create and start http server
 const server = http.createServer((req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Request-Method', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+  res.setHeader('Access-Control-Allow-Headers', '*');
   for (const id in routes) {
     if (handleRoute(routes[id], req, res)) {
       return;
@@ -104,6 +108,9 @@ function handleRoute(route, req, res): boolean {
   console.log(`matching ${parsedUrl.path} with`, route);
 
   if (parsedUrl.path.indexOf(route.route) === 0) {
+
+    if (req.method === 'OPTIONS')
+      res.setHeader('Access-Control-Allow-Origin', '*');
 
     console.log(`Matched! routing ${req.method} request to: ` + route.url);
 
