@@ -117,9 +117,15 @@ services:
     build: ./api-gateway
     ports:
       - "8080:8080"
+    expose:
+      - "8080"
     environment:
       HTTP_HOST: 8080
       JWT_SECRET: mysupersecret
+      LETSENCRYPT_HOST: finditapi.zaunermax.at
+      LETSENCRYPT_EMAIL: zaunermax@gmail.com
+      VIRTUAL_HOST: finditapi.zaunermax.at
+      VIRTUAL_PORT: 8080
     networks:
       - be-network
     volumes:
