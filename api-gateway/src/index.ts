@@ -107,7 +107,7 @@ function handleRoute(route, req, res): boolean {
 
     console.log(`Matched! routing ${req.method} request to: ` + route.url);
 
-    if (route.secure && !decoded) {
+    if (route.secure && !decoded && req.method !== 'OPTIONS') {
       return false;
     }
 
