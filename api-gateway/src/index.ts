@@ -109,8 +109,12 @@ function handleRoute(route, req, res): boolean {
 
   if (parsedUrl.path.indexOf(route.route) === 0) {
 
-    if (req.method === 'OPTIONS')
+    if (req.method === 'OPTIONS') {
       res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Headers', '*');
+      res.setHeader('Access-Control-Request-Method', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+    }
 
     console.log(`Matched! routing ${req.method} request to: ` + route.url);
 
