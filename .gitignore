@@ -83,3 +83,6 @@ typings/
 hs_err_pid*
 
 /api-gateway/dist/
+
+.idea
+*.iml
