@@ -1,7 +1,7 @@
 import { Inject, Service } from "typedi";
 import { KoaServerImpl } from "../services/KoaServerImpl";
-import { ClientFactory } from "../events/ClientFactory";
 import { FileUploadedHandler } from "../services/FileEventHandler";
+import { ProducerFactory } from "../events/ProducerFactory";
 
 export interface IServer {
   start: (port: number, message?: string) => void
@@ -14,13 +14,14 @@ export class Application {
   server: IServer;
 
   constructor(
-    private clientFactory: ClientFactory,
+    private producerFactory: ProducerFactory,
     private fileEventHandler: FileUploadedHandler
   ) {
     this.fileEventHandler.registerHandlers();
   }
 
   async start() {
-    this.server.start(+process.env.HTTP_HOST);
+    await this.producerFactory.initProducer();
+    this.server.start(Number(process.env.HTTP_HOST));
   }
 }

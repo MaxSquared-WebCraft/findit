@@ -8,8 +8,17 @@ export class ProducerFactory {
   @Inject()
   private clientFactory: ClientFactory;
 
+  private producer: Producer;
+
+  async initProducer(): Promise<any> {
+    this.producer = new Producer(this.clientFactory.getClient());
+    return new Promise((resolve) => {
+      this.producer.on('ready', () => resolve(true))
+    })
+  }
+
   getProducer(): Producer {
-    return new Producer(this.clientFactory.getClient())
+    return this.producer;
   }
 
   private static stdCallback = (err: any, data: any): void => {
