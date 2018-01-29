@@ -13,18 +13,16 @@ export class ProducerFactory {
   async initProducer(): Promise<any> {
     this.producer = new Producer(this.clientFactory.getClient());
     return new Promise((resolve) => {
-      this.producer.on('ready', () => resolve(true))
-    })
+      this.producer.on("ready", () => {
+        console.log("producer ready!");
+        resolve(true);
+      });
+    });
   }
 
   getProducer(): Producer {
     return this.producer;
   }
-
-  private static stdCallback = (err: any, data: any): void => {
-    if (err) return console.error('error', err);
-    console.log('sent', data);
-  };
 
   public static registerAsyncProducer = (producer: Producer,
                                          payloads: ProduceRequest[],
@@ -40,6 +38,11 @@ export class ProducerFactory {
                                      payloads: ProduceRequest[],
                                      cb?: (err: any, data: any) => void): void => {
     const callback = cb || ProducerFactory.stdCallback;
-    producer.send(payloads, callback)
-  }
+    producer.send(payloads, callback);
+  };
+
+  private static stdCallback = (err: any, data: any): void => {
+    if (err) return console.error("error", err);
+    console.log("sent", data);
+  };
 }

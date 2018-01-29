@@ -4,7 +4,7 @@ import { FileUploadedHandler } from "../services/FileEventHandler";
 import { ProducerFactory } from "../events/ProducerFactory";
 
 export interface IServer {
-  start: (port: number, message?: string) => void
+  start: (port: number, message?: string) => void;
 }
 
 @Service()

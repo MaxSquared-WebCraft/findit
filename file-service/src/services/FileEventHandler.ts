@@ -8,7 +8,7 @@ import { Document } from "../entities/Document";
 
 type CbFunction = (message: Message) => void
 
-interface FileUploadedEventData {
+interface IFileUploadedEventData {
   location: string;
   userId: string;
   fileUuid: string;
@@ -17,15 +17,15 @@ interface FileUploadedEventData {
 @Service()
 export class FileUploadedHandler {
 
-  private static FILE_UPLOADED = 'FILE_UPLOADED';
-  private static FILE_DELETED = 'FILE_DELETED';
+  private static FILE_UPLOADED = "FILE_UPLOADED";
+  private static FILE_DELETED = "FILE_DELETED";
 
   private documentRepo: Repository<Document>;
   private userRepo: Repository<User>;
   private consumer: Consumer;
 
   constructor(@OrmConnection() private connection: Connection,
-              private consumerFactory: ConsumerFactory,) {
+              private consumerFactory: ConsumerFactory) {
 
     const topics = [
       { topic: FileUploadedHandler.FILE_UPLOADED },
@@ -44,15 +44,17 @@ export class FileUploadedHandler {
   };
 
   private registerAsyncConsumerOnTopic = (topic: string, callback: CbFunction) => {
-    this.consumer.on('message', (message) => {
+    this.consumer.on("message", (message) => {
       if (message.topic === topic)
-        callback(message)
-    })
+        callback(message);
+    });
   };
 
   private handleFileUploaded = async (message: Message) => {
 
-    const { fileUuid, location, userId }: FileUploadedEventData = JSON.parse(message.value);
+    console.log(`processing ${message.topic} event`);
+
+    const { fileUuid, location, userId }: IFileUploadedEventData = JSON.parse(message.value);
 
     let user = await this.userRepo.findOne({ uuid: userId });
 
@@ -71,6 +73,6 @@ export class FileUploadedHandler {
   };
 
   private handleFileDeleted = async (message: Message) => {
-    console.log('FILE_DELETED event received\n', message)
+    console.log("FILE_DELETED event received\n", message);
   };
 }

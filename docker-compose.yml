@@ -1,27 +1,27 @@
 version: '3'
 
 services:
-  zookeeper:
-    image: wurstmeister/zookeeper
-    ports:
-      - "2181:2181"
-    networks:
-      - be-network
-
-  kafka:
-    image: wurstmeister/kafka
-    ports:
-      - "9092:9092"
-    depends_on:
-      - zookeeper
-    networks:
-      - be-network
-    environment:
-      KAFKA_ADVERTISED_HOST_NAME: 192.168.99.100
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_CREATE_TOPICS: "USER_CREATED:1:1,USER_CHANGED:1:1,USER_DELETED:1:1,FILE_UPLOADED:1:1,FILE_DELETED:1:1,METADATA_EXTRACTED:1:1"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+#  zookeeper:
+#    image: wurstmeister/zookeeper
+#    ports:
+#      - "2181:2181"
+#    networks:
+#      - be-network
+#
+#  kafka:
+#    image: wurstmeister/kafka:latest
+#    ports:
+#      - "9092:9092"
+#    depends_on:
+#      - zookeeper
+#    networks:
+#      - be-network
+#    environment:
+#      KAFKA_ADVERTISED_HOST_NAME: "kafka"
+#      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+#      KAFKA_CREATE_TOPICS: "USER_CREATED:1:1,USER_CHANGED:1:1,USER_DELETED:1:1,FILE_UPLOADED:1:1,FILE_DELETED:1:1,METADATA_EXTRACTED:1:1"
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
 
   elasticsearch:
     image: bitnami/elasticsearch:6-master
@@ -58,7 +58,7 @@ services:
     build: ./file-service
     depends_on:
       - file-db
-      - kafka
+#      - kafka
     labels:
       - "api_routes=/file"
       - "secure=yes"
@@ -66,7 +66,7 @@ services:
       - be-network
     environment:
       HTTP_HOST: 8081
-      KAFKA_HOST: kafka:9092
+      KAFKA_HOST: zaunerserver.ddns.net:49312
       DB_HOST: file-db
       DB_PORT: 3306
       DB_NAME: fileservice
@@ -81,7 +81,7 @@ services:
     build: ./user-service
     depends_on:
       - user-db
-      - kafka
+#      - kafka
     labels:
       - "api_routes=/login;/signup;/users;/roles;/user;/role"
       - "secure=no"
@@ -89,7 +89,7 @@ services:
       - be-network
     environment:
       HTTP_HOST: 8081
-      KAFKA_HOST: kafka:9092
+      KAFKA_HOST: zaunerserver.ddns.net:49312
       JWT_SECRET: mysupersecret
       DB_HOST: user-db
       DB_PORT: 3306
@@ -100,7 +100,7 @@ services:
   fulltext-service:
     build: ./fulltext-service
     depends_on:
-      - kafka
+#      - kafka
       - elasticsearch
     labels:
       - "api_routes=/search"
@@ -109,7 +109,7 @@ services:
       - be-network
     environment:
       HTTP_HOST: 8082
-      KAFKA_HOST: kafka:9092
+      KAFKA_HOST: zaunerserver.ddns.net:49312
       ELASTIC_URL: elasticsearch
       ELASTIC_LOG_LEVEL: trace
 
@@ -129,5 +129,6 @@ volumes:
   file_data:
   user_data:
   elastic_data:
+
 networks:
   be-network:

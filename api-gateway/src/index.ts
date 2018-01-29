@@ -4,6 +4,12 @@ import * as httpProxy from 'http-proxy';
 import * as parseurl from 'parseurl';
 import * as jwt from 'jsonwebtoken';
 
+interface IErrorData {
+  msg: string;
+  err?: any;
+  code?: number;
+}
+
 // process input via env vars
 const dockerOpts: any = { socketPath: process.env.DOCKER_SOCKET };
 if (!dockerOpts.socketPath) {
@@ -60,17 +66,21 @@ monitor({
 
 // create and start http server
 const server = http.createServer((req, res) => {
+
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Request-Method', '*');
   res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
   res.setHeader('Access-Control-Allow-Headers', '*');
+
   for (const id in routes) {
-    if (handleRoute(routes[id], req, res)) {
-      return;
+    if (routes.hasOwnProperty(id)) {
+      if (handleRoute(routes[id], req, res)) {
+        return;
+      }
     }
   }
 
-  returnError(req, res);
+  returnError(req, res, { code: 502, msg: 'Bad Gateway.'});
 });
 
 console.log('API gateway is listening on port: %d', httpPort);
@@ -80,7 +90,7 @@ server.listen(httpPort);
 const proxy = httpProxy.createProxyServer();
 proxy.on('error', (err, req, res) => {
   console.log('error', err);
-  returnError(req, res);
+  returnError(req, res, { err, code: 500, msg: 'Could not create proxy.'});
 });
 
 // proxy HTTP request / response to / from destination upstream service if route matches
@@ -113,7 +123,7 @@ function handleRoute(route, req, res): boolean {
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Headers', 'authorization');
       res.setHeader('Access-Control-Request-Method', '*');
-      res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+      res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
     }
 
     console.log(`Matched! routing ${req.method} request to: ` + route.url);
@@ -139,9 +149,12 @@ function getUpstreamUrl(containerDetails) {
   }
 }
 
-// send 502 response to the client in case of an error
-function returnError(req, res) {
-  res.writeHead(502, { 'Content-Type': 'application/json' });
-  res.write('Bad Gateway for: ' + req.url);
-  res.end();
+function returnError(res, req, errorData: IErrorData) {
+  res
+    .status(errorData.code || 500)
+    .json({
+      url: req.url,
+      msg: errorData.msg,
+      err: errorData.err,
+    });
 }
