@@ -80,7 +80,8 @@ const server = http.createServer((req, res) => {
     }
   }
 
-  returnError(req, res, { code: 502, msg: 'Bad Gateway.'});
+  console.log('No match, return error');
+  returnError(req, res, { code: 502, msg: 'Bad Gateway.' });
 });
 
 console.log('API gateway is listening on port: %d', httpPort);
@@ -90,7 +91,7 @@ server.listen(httpPort);
 const proxy = httpProxy.createProxyServer();
 proxy.on('error', (err, req, res) => {
   console.log('error', err);
-  returnError(req, res, { err, code: 500, msg: 'Could not create proxy.'});
+  returnError(req, res, { err, code: 500, msg: 'Could not create proxy.' });
 });
 
 // proxy HTTP request / response to / from destination upstream service if route matches
@@ -110,8 +111,8 @@ function handleRoute(route, req, res): boolean {
 
     console.log(decoded); // bar
     // set token for role and userid
+    req.headers.userId = decoded.uuid;
     req.headers['x-user'] = decoded.uuid;
-    req.headers['userId'] = decoded.uuid;
     req.headers['x-role'] = decoded.role;
   }
 
@@ -149,12 +150,11 @@ function getUpstreamUrl(containerDetails) {
   }
 }
 
-function returnError(res, req, errorData: IErrorData) {
-  res
-    .status(errorData.code || 500)
-    .json({
-      url: req.url,
-      msg: errorData.msg,
-      err: errorData.err,
-    });
+function returnError(req, res, errorData: IErrorData) {
+  res.writeHead(errorData.code || 500, {'Content-Type': 'application/json'});
+  res.end(JSON.stringify({
+    url: req.url,
+    msg: errorData.msg,
+    err: errorData.err,
+  }));
 }

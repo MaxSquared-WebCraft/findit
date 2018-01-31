@@ -58,6 +58,7 @@ export class KafkaHandler {
 
   async handleIncoming(event: any) {
     const obj = JSON.parse(event.value);
+    logger.info(`Handle ${event.topic} event`);
     switch (event.topic) {
       case 'USER_CREATED':
         await this.userRepository.registerUser(new UserModel(obj));
