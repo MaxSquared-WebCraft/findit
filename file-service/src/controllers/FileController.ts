@@ -3,7 +3,7 @@ import { Inject } from "typedi";
 import { Document } from "../entities/Document";
 import {AwsUploadServiceImpl} from '../services/AwsUploadServiceImpl';
 
-export interface MulterFile {
+export interface IMulterFile {
   fieldname: string;
   originalname: string;
   encoding: string;
@@ -13,8 +13,8 @@ export interface MulterFile {
 }
 
 export interface IFileUploadService {
-  upload: (file: MulterFile, userId: string) => Promise<any>
-  getFiles: (id: string) => Promise<Document[]>
+  upload: (file: IMulterFile, userId: string) => Promise<any>;
+  getFiles: (id: string) => Promise<Document[]>;
 }
 
 @JsonController('/file')
@@ -24,13 +24,13 @@ export class FileController {
   uploadService: IFileUploadService;
 
   @Post('/')
-  async addFile(@UploadedFile("document") file: MulterFile,
+  async addFile(@UploadedFile("document") file: IMulterFile,
                 @HeaderParam("x-user") userId: string) {
     return this.uploadService.upload(file, userId);
   }
 
   @Get('/:id')
   getFile(@Param('id') id: string) {
-    return this.uploadService.getFiles(id)
+    return this.uploadService.getFiles(id);
   }
 }

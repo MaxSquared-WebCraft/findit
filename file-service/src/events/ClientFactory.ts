@@ -1,13 +1,15 @@
-import { Service } from "typedi";
+import { Inject, Service } from "typedi";
 import { Client } from "kafka-node";
+import { WinstonLoggerImpl } from "../common/WinstonLoggerImpl";
+import { ILogger } from "../../build/config/Application";
 
 @Service()
 export class ClientFactory {
 
-  private client: Client;
+  private readonly client: Client;
 
-  constructor() {
-    console.log(`Kafka host: ${process.env.KAFKA_HOST}`);
+  constructor(@Inject(WinstonLoggerImpl) private readonly logger: ILogger) {
+    this.logger.info(`Kafka host: ${process.env.KAFKA_HOST}`);
     this.client = new Client(process.env.KAFKA_HOST);
   }
 

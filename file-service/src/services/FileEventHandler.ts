@@ -1,17 +1,20 @@
-import { Service } from "typedi";
+import { Inject, Service } from "typedi";
 import { Consumer, Message } from "kafka-node";
 import { ConsumerFactory } from "../events/ConsumerFactory";
 import { OrmConnection } from "typeorm-typedi-extensions";
 import { Connection, Repository } from "typeorm";
 import { User } from "../entities/User";
 import { Document } from "../entities/Document";
+import { WinstonLoggerImpl } from "../common/WinstonLoggerImpl";
+import { ILogger } from "../config/Application";
 
-type CbFunction = (message: Message) => void
+type CbFunction = (message: Message) => void;
 
 interface IFileUploadedEventData {
   location: string;
   userId: string;
   fileUuid: string;
+  originalname: string;
 }
 
 @Service()
@@ -24,8 +27,10 @@ export class FileUploadedHandler {
   private userRepo: Repository<User>;
   private consumer: Consumer;
 
-  constructor(@OrmConnection() private connection: Connection,
-              private consumerFactory: ConsumerFactory) {
+  constructor(@OrmConnection() private readonly connection: Connection,
+              @Inject(WinstonLoggerImpl) private readonly logger: ILogger,
+              private readonly consumerFactory: ConsumerFactory
+  ) {
 
     const topics = [
       { topic: FileUploadedHandler.FILE_UPLOADED },
@@ -52,9 +57,9 @@ export class FileUploadedHandler {
 
   private handleFileUploaded = async (message: Message) => {
 
-    console.log(`processing ${message.topic} event`);
+    this.logger.info(`Processing ${message.topic} event %j`, message);
 
-    const { fileUuid, location, userId }: IFileUploadedEventData = JSON.parse(message.value);
+    const { fileUuid, location, userId, originalname }: IFileUploadedEventData = JSON.parse(message.value);
 
     let user = await this.userRepo.findOne({ uuid: userId });
 
@@ -67,6 +72,7 @@ export class FileUploadedHandler {
 
     document.location = location;
     document.uuid = fileUuid;
+    document.originalName = originalname;
     document.users = [user];
 
     this.documentRepo.save(document).catch(console.error);

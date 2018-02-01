@@ -22,7 +22,8 @@
     "typedi": "^0.6.0",
     "typeorm": "^0.1.9",
     "typeorm-typedi-extensions": "^0.1.1",
-    "uuid": "^3.1.0"
+    "uuid": "^3.1.0",
+    "winston": "3.0.0-rc0"
   },
   "devDependencies": {
     "@types/config": "^0.0.33",
@@ -39,7 +40,8 @@
   "scripts": {
     "prestart": "npm run build",
     "start": "cross-env NODE_ENV=production node index.js",
-    "dev": "concurrently -k -p \"[{name}]\" -n \"type,node\" -c \"blue,red.bold\" \"npm run build:watch\" \"nodemon \"",
+    "dev": "cross-env HTTP_HOST=8080 KAFKA_HOST=zaunerserver.ddns.net:49312 DB_HOST=192.168.99.100 DB_PORT=3306 DB_NAME=fileservice DB_USER=user DB_PASSWORD=password AWS_ACCESS_KEY=AKIAJXB2DYB2EF5SBNCA AWS_SECRET_ACCESS_KEY=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 AWS_BUCKET=findit.zaunermax.at AWS_REGION=eu-west-1 npm run devStart",
+    "devStart": "concurrently -k -p \"[{name}]\" -n \"type,node\" -c \"blue,red.bold\" \"npm run build:watch\" \"nodemon \"",
     "build": "node_modules/.bin/tsc",
     "build:watch": "npm run build -- -w"
   }

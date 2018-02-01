@@ -11,9 +11,12 @@ export class Document {
   uuid: string;
 
   @Column()
+  originalName: string;
+
+  @Column()
   location: string;
 
-  @ManyToMany(() => User, user => user.documents, {
+  @ManyToMany(() => User, (user) => user.documents, {
     cascadeInsert: true,
     cascadeUpdate: true,
   })
