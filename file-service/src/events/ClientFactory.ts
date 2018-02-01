@@ -1,7 +1,7 @@
 import { Inject, Service } from "typedi";
 import { Client } from "kafka-node";
 import { WinstonLoggerImpl } from "../common/WinstonLoggerImpl";
-import { ILogger } from "../../build/config/Application";
+import { ILogger } from "../config/Application";
 
 @Service()
 export class ClientFactory {

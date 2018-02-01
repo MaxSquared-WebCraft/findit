@@ -1,7 +1,6 @@
 import { Inject, Service, Token } from "typedi";
 import { createKoaServer } from "routing-controllers";
-import { IServer } from "../config/Application";
-import { ILogger } from "../../build/config/Application";
+import { ILogger, IServer } from "../config/Application";
 import { WinstonLoggerImpl } from "../common/WinstonLoggerImpl";
 
 export const KoaServerImpl = new Token<IServer>();
