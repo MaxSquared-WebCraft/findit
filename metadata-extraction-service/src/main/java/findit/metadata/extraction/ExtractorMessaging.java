@@ -6,6 +6,7 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.SubscribableChannel;
 
 public interface ExtractorMessaging {
+
     String FILE_UPLOADED = "FILE_UPLOADED";
     String METADATA_EXTRACTED = "METADATA_EXTRACTED";
 

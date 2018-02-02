@@ -5,6 +5,8 @@ import findit.metadata.extraction.events.MetadataExtractedEvent;
 import findit.metadata.extraction.interfaces.Extractor;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,7 +25,10 @@ import java.net.URL;
 @ImportResource("classpath:spring.xml")
 @EnableBinding(ExtractorMessaging.class)
 public class MetadataExtractionServiceApplication {
+
     private final Extractor extractor;
+
+    private static Logger logger = LoggerFactory.getLogger(MetadataExtractionServiceApplication.class);
 
     @Autowired
     public MetadataExtractionServiceApplication(Extractor extractor) {
@@ -32,6 +37,7 @@ public class MetadataExtractionServiceApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(MetadataExtractionServiceApplication.class, args);
+        logger.info("Called run command on application");
     }
 
     private static File downloadFileFromURL(URL url) throws IOException {
@@ -44,9 +50,13 @@ public class MetadataExtractionServiceApplication {
     }
 
     @StreamListener(ExtractorMessaging.FILE_UPLOADED)
-    @SendTo(ExtractorMessaging.METADATA_EXTRACTED)
-    public MetadataExtractedEvent receivedFileUploaded(FileUploadedEvent fileUploaded) {
-        MetadataExtractedEvent metadataExtractedEvent = new MetadataExtractedEvent();
+//    @SendTo(ExtractorMessaging.METADATA_EXTRACTED)
+    public void receivedFileUploaded(String message) {
+
+        logger.info("got FILE_UPLOADED event");
+        logger.info("Message:" + message);
+
+        /*MetadataExtractedEvent metadataExtractedEvent = new MetadataExtractedEvent();
         JSONObject extractionMetadata = null;
         try {
             URL url = new URL("http://file-service/file/" + fileUploaded.getFileId());
@@ -70,6 +80,6 @@ public class MetadataExtractionServiceApplication {
             metadataExtractedEvent.setUserId(fileUploaded.getUserId());
             metadataExtractedEvent.setMetadata(content);
         }
-        return metadataExtractedEvent;
+        return metadataExtractedEvent;*/
     }
 }

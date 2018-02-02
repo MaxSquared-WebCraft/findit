@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+
+  file-db-metadev:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pass
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: fileservice
+    networks:
+      - be-network
+    volumes:
+      - file_data_metadev:/var/lib/mysql
+
+  file-service-metadev:
+    build: ../file-service
+    depends_on:
+      - file-db-metadev
+    labels:
+      - "api_routes=/file"
+      - "secure=yes"
+    networks:
+      - be-network
+    ports:
+      - 8081:8081
+    environment:
+      HTTP_HOST: 8081
+      KAFKA_HOST: zaunerserver.ddns.net:49312
+      DB_HOST: file-db-metadev
+      DB_PORT: 3306
+      DB_NAME: fileservice
+      DB_USER: user
+      DB_PASSWORD: password
+      AWS_ACCESS_KEY: AKIAJXB2DYB2EF5SBNCA
+      AWS_SECRET_ACCESS_KEY: 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
+      AWS_BUCKET: findit.zaunermax.at
+      AWS_REGION: eu-west-1
+
+volumes:
+  file_data_metadev:
+
+networks:
+  be-network:

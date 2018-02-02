@@ -46,7 +46,7 @@ export class WinstonLogger implements ILogger {
   private registerUnhandled = () => {
     this.logger.info('Registering unhandled rejection handler...');
     process.on('unhandledRejection', (reason, p) => {
-      this.logger.warn(`Unhandled rejection at Promise ${p}, reason ${reason}`);
+      this.logger.error(`Unhandled rejection at Promise ${p}, reason ${reason}`);
     });
   };
 

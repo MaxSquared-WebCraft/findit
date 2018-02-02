@@ -22,6 +22,7 @@ import java.io.InputStream;
 
 @Component
 public class TikaExtractor implements Extractor {
+
     private static Logger logger = LoggerFactory.getLogger(TikaExtractor.class);
 
     private AutoDetectParser autoParser;
