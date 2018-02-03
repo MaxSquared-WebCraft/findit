@@ -7,7 +7,7 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.sax.BodyContentHandler;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +88,7 @@ public class TikaExtractor implements Extractor {
         String contentLength = tikaMetadata.get("Content-Length");
         contentLength = contentLength != null ? contentLength : "0";
 
-        extractJson.put("Exception", null);
+        extractJson.put("Exception", "");
         extractJson.put("Text", extractedText);
         extractJson.put("ContentType", contentType);
         extractJson.put("ContentLength", contentLength);

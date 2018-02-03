@@ -1,6 +1,6 @@
 package findit.metadata.extraction.interfaces;
 
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 
 import java.io.File;
 

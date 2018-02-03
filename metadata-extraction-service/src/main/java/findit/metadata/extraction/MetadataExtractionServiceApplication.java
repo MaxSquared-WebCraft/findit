@@ -1,10 +1,9 @@
 package findit.metadata.extraction;
 
-import findit.metadata.extraction.events.FileUploadedEvent;
 import findit.metadata.extraction.events.MetadataExtractedEvent;
 import findit.metadata.extraction.interfaces.Extractor;
 import org.apache.commons.io.IOUtils;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 @SpringBootApplication
@@ -27,7 +27,6 @@ import java.net.URL;
 public class MetadataExtractionServiceApplication {
 
     private final Extractor extractor;
-
     private static Logger logger = LoggerFactory.getLogger(MetadataExtractionServiceApplication.class);
 
     @Autowired
@@ -37,7 +36,6 @@ public class MetadataExtractionServiceApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(MetadataExtractionServiceApplication.class, args);
-        logger.info("Called run command on application");
     }
 
     private static File downloadFileFromURL(URL url) throws IOException {
@@ -50,36 +48,51 @@ public class MetadataExtractionServiceApplication {
     }
 
     @StreamListener(ExtractorMessaging.FILE_UPLOADED)
-//    @SendTo(ExtractorMessaging.METADATA_EXTRACTED)
-    public void receivedFileUploaded(String message) {
+    @SendTo(ExtractorMessaging.METADATA_EXTRACTED)
+    public String handle(byte[] in) {
 
-        logger.info("got FILE_UPLOADED event");
-        logger.info("Message:" + message);
+        JSONObject uploadedFileMsg = new JSONObject(new String(in));
+        JSONObject extractionMetadata = new JSONObject();
 
-        /*MetadataExtractedEvent metadataExtractedEvent = new MetadataExtractedEvent();
-        JSONObject extractionMetadata = null;
+        logger.info("Location: " + uploadedFileMsg.getString("location"));
+
         try {
-            URL url = new URL("http://file-service/file/" + fileUploaded.getFileId());
-            File f = downloadFileFromURL(url);
 
+            URL url = new URL(uploadedFileMsg.getString("location"));
+            File f = downloadFileFromURL(url);
             extractionMetadata = extractor.getAll(f);
-            f.delete();
-        } catch (Exception e) {
+
+            boolean success = f.delete();
+
+            if (!success)
+                throw new IOException("File could not be deleted");
+
+        } catch (MalformedURLException e) {
+            logger.error("Malformed url exception in FILE_UPLOADED event", e);
+        } catch (IOException e) {
+            logger.error("IO Exception wile downloading file", e);
         }
 
         if (extractionMetadata != null) {
+
             String content = (String) extractionMetadata.get("Text");
+
             // Remove new lines
             content = content.replace("\n", " ");
             content = content.replace("\r", " ");
+
             // remove multiple spaces so only one is present between words
             content = content.replaceAll("\\s{2,}", " ").trim();
-            extractionMetadata.put("Text", content);
 
-            metadataExtractedEvent.setFileId(fileUploaded.getFileId());
-            metadataExtractedEvent.setUserId(fileUploaded.getUserId());
-            metadataExtractedEvent.setMetadata(content);
+            extractionMetadata.put("Text", content);
         }
-        return metadataExtractedEvent;*/
+
+        if(extractionMetadata != null) {
+            logger.info(extractionMetadata.toString());
+            return extractionMetadata.toString();
+        } else {
+            logger.error("Could not extract Metadata");
+            return "";
+        }
     }
 }

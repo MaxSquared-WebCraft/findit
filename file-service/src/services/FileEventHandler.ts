@@ -81,4 +81,5 @@ export class FileUploadedHandler {
   private handleFileDeleted = async (message: Message) => {
     console.log("FILE_DELETED event received\n", message);
   };
+
 }
