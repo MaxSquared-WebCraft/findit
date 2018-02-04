@@ -83,7 +83,11 @@ public class MetadataExtractionServiceApplication {
             // remove multiple spaces so only one is present between words
             content = content.replaceAll("\\s{2,}", " ").trim();
 
-            extractionMetadata.put("Text", content);
+            extractionMetadata.put("metadata", content);
+            extractionMetadata.put("fileUuid", uploadedFileMsg.getString("fileUuid"));
+            extractionMetadata.put("userId", uploadedFileMsg.getString("userId"));
+            extractionMetadata.put("originalname", uploadedFileMsg.getString("originalname"));
+            extractionMetadata.put("location", uploadedFileMsg.getString("location"));
         }
 
         if(extractionMetadata != null) {

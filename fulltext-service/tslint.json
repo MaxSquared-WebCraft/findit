@@ -5,10 +5,7 @@
       true,
       "spaces"
     ],
-    "quotemark": [
-      true,
-      "single"
-    ],
+    "quotemark": false,
     "object-literal-sort-keys": false,
     "trailing-comma": false,
     "class-name": true,

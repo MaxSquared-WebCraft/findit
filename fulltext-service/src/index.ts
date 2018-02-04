@@ -5,6 +5,7 @@ import 'source-map-support/register';
 import 'reflect-metadata';
 import './types';
 
-import {Application} from './config/Application';
+import { Application } from './config/Application';
+import { Container } from "typedi";
 
-export default new Application();
+Container.get(Application);

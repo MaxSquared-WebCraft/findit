@@ -25,6 +25,9 @@ services:
 
   elasticsearch:
     image: bitnami/elasticsearch:6-master
+    ports:
+      - "9200:9200"
+      - "9300:9300"
     volumes:
       - elastic_data:/bitnami
     networks:
@@ -110,8 +113,11 @@ services:
     environment:
       HTTP_HOST: 8082
       KAFKA_HOST: zaunerserver.ddns.net:49312
-      ELASTIC_URL: elasticsearch
-      ELASTIC_LOG_LEVEL: trace
+      ELASTIC_URL: elasticsearch:9200
+      ELASTIC_LOG_LEVEL: debug
+
+  metadata-extraction-service:
+    build: ./metadata-extraction-service
 
   api-gateway:
     build: ./api-gateway

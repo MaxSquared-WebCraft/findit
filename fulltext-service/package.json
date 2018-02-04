@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm-run-all -s build start:simple",
     "start:simple": "node .",
-    "start:dev": "npm-run-all -s build -p watch:*",
+    "start:dev": "cross-env HTTP_HOST=8082 KAFKA_HOST=zaunerserver.ddns.net:49312 ELASTIC_URL=192.168.99.100:9200 ELASTIC_LOG_LEVEL=trace npm-run-all -s build -p watch:*",
     "build": "tsc",
     "watch:ts": "tsc --watch",
     "watch:node": "nodemon --debug --delay 2.5",
@@ -47,6 +47,7 @@
     "@types/winston": "^2.2.25-alpha",
     "chai": "^3.5.0",
     "codeclimate-test-reporter": "^0.3.3",
+    "cross-env": "^5.1.3",
     "istanbul": "^0.4.4",
     "mocha": "^2.5.3",
     "npm-run-all": "^3.0.0",

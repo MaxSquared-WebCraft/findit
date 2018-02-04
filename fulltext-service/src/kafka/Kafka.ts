@@ -14,20 +14,10 @@ export class KafkaHandler {
   }
 
   async setupKafka() {
-    this.producer = new Producer(new Client(process.env.KAFKA_HOST));
-    this.producer.on('ready', () => {
-      this.setupWhenProducerReady();
-    });
+    logger.info('Setting up kafka');
     this.consumer = new Consumer(new Client(process.env.KAFKA_HOST),
       [{ topic: 'METADATA_EXTRACTED' }],
-      { groupId: 'fulltext-service-consumer' + Math.random().toString(36).substring(7) }
     );
-  }
-
-  setupWhenProducerReady() {
-    this.producer.on('error', (err) => {
-      logger.error('error', err);
-    });
     this.consumer.on('message', (message) => {
       this.handleIncoming(message)
         .then(() => logger.info('Handled METADATA_EXTRACTED message.'))
@@ -35,8 +25,24 @@ export class KafkaHandler {
     });
   }
 
+  setupWhenProducerReady() {
+    this.producer.on('error', (err) => {
+      logger.error('error', err);
+    });
+
+  }
+
   async handleIncoming(message: Message) {
     const obj = JSON.parse(message.value);
-    return this.elasticSearch.addDocumentToUser(obj.userId, obj.fileId, obj.metadata);
+    logger.info('Message:', obj);
+    return this.elasticSearch.addDocumentToUser(
+      obj.userId || 'nix' + Math.random(),
+      obj.fileUuid || 'nix' + Math.random(),
+      {
+        title: obj.originalname || '',
+        content: obj.metadata || '',
+        location: obj.location || '',
+      }
+    );
   }
 }
