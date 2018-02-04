@@ -12,14 +12,9 @@
     "watch:node": "nodemon --debug --delay 2.5",
     "lint": "tslint ./src/{,**/}*.ts"
   },
-  "engines": {
-    "node": "~6.3"
-  },
-  "engineStrict": true,
   "author": "neXr",
   "license": "MIT",
   "dependencies": {
-    "@types/elasticsearch": "^5.0.17",
     "body-parser": "^1.15.2",
     "config": "^1.21.0",
     "cors": "^2.7.1",
@@ -41,6 +36,7 @@
     "@types/chai": "^3.4.26-alpha",
     "@types/config": "0.0.29",
     "@types/cors": "0.0.29",
+    "@types/elasticsearch": "^5.0.19",
     "@types/express": "^4.0.29",
     "@types/glob": "^5.0.29",
     "@types/js-yaml": "^3.5.25-alpha",
@@ -53,13 +49,13 @@
     "codeclimate-test-reporter": "^0.3.3",
     "istanbul": "^0.4.4",
     "mocha": "^2.5.3",
+    "npm-run-all": "^3.0.0",
     "remap-istanbul": "^0.6.4",
+    "rimraf": "^2.0.0",
     "source-map-support": "^0.4.1",
     "supertest": "^3.0.0",
     "ts-helpers": "^1.1.1",
     "tslint": "^5.8.0",
-    "typescript": "^2.0.0",
-    "npm-run-all": "^3.0.0",
-    "rimraf": "^2.0.0"
+    "typescript": "^2.0.0"
   }
 }

@@ -1,6 +1,5 @@
 package findit.metadata.extraction;
 
-import findit.metadata.extraction.events.MetadataExtractedEvent;
 import findit.metadata.extraction.interfaces.Extractor;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
