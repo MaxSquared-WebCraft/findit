@@ -111,7 +111,7 @@ services:
     networks:
       - be-network
     environment:
-      HTTP_HOST: 8082
+      HTTP_HOST: 8081
       KAFKA_HOST: zaunerserver.ddns.net:49312
       ELASTIC_URL: elasticsearch:9200
       ELASTIC_LOG_LEVEL: debug
