@@ -1,6 +1,6 @@
 ## Welcome to our findit project 👋
 
-Small disclaimer - this text is 100% chat GPT free and comes 100% from a human 🧠 (not
+Small disclaimer - this text (and also the code) is 100% chat GPT free and comes 100% from a human 🧠 (not
 even co-pilot complete)
 
 If you want to see the frontend implementation go
