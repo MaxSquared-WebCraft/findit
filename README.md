@@ -80,5 +80,4 @@ arrows. The image shows only the upload and metadata processing procedure.
 
 ![SampleRequest](https://github.com/MaxSquared-WebCraft/findit/assets/15246773/d5cb2329-8f38-436c-addb-7cb7bbec90da)
 
-If you want to see an example video you can find it
-[here](docs/sample-request-showcase.mp4)
+If you want to see an example video you can find it [here](docs/output-sample-request.gif)
