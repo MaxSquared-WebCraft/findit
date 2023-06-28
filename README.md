@@ -1,10 +1,9 @@
 ## Welcome to our findit project 👋
 
-Small disclaimer - this text (and also the code) is 100% chat GPT free and comes 100% from a human 🧠 (not
+### 2 small disclaimers: 
+1) this text (and also the code) is 100% chat GPT free and comes 100% from a human 🧠 (not
 even co-pilot complete)
-
-If you want to see the frontend implementation go
-[here](https://github.com/MaxSquared-WebCraft/findit-frontend)
+2) the code is pretty old and web technology was different back then, keep that in mind 😉
 
 We created this software during our master studies at the University of Applied Sciences
 in Hagenberg. The master's programme was very nice for us because we could try out
@@ -74,6 +73,11 @@ As the name suggests this service handles all files that are provided to the pla
 makes them accessible if you want to look at and or download a document you searched for.
 
 ![Architecture](https://github.com/MaxSquared-WebCraft/findit/assets/15246773/be1e64dd-2506-452c-a2df-7c09f43f6d3f)
+
+## Frontend
+
+If you want to see the frontend implementation go
+[here](https://github.com/MaxSquared-WebCraft/findit-frontend)
 
 ## Enough talk! How does it work? 🙊
 
